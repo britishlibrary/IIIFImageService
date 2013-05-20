@@ -55,7 +55,7 @@ public class RequestDataTest {
         requestData.setSize("100,");
         requestData.setRegion("full");
 
-        Dimension scaling = regionSizeCalculator.getSize(imageMetadata, requestData);
+        Dimension scaling = regionSizeCalculator.getSizeForImageManipulation(imageMetadata, requestData);
 
         assertTrue("Width wrong, expected 100, got " + scaling.getWidth(), scaling.getWidth() == 100d);
 
@@ -68,7 +68,7 @@ public class RequestDataTest {
         requestData.setSize(",100");
         requestData.setRegion("full");
 
-        Dimension scaling = regionSizeCalculator.getSize(imageMetadata, requestData);
+        Dimension scaling = regionSizeCalculator.getSizeForImageManipulation(imageMetadata, requestData);
 
         assertTrue("Height wrong, expected 100, got " + scaling.getHeight(), scaling.getHeight() == 100d);
 
@@ -95,8 +95,8 @@ public class RequestDataTest {
         requestData.setRegion("full");
 
         assertTrue(requestData.isSizeBestFit());
-        assertTrue(regionSizeCalculator.getSize(imageMetadata, requestData).getWidth() == 150d);
-        assertTrue(regionSizeCalculator.getSize(imageMetadata, requestData).getHeight() == 75d);
+        assertTrue(regionSizeCalculator.getSizeForImageManipulation(imageMetadata, requestData).getWidth() == 150d);
+        assertTrue(regionSizeCalculator.getSizeForImageManipulation(imageMetadata, requestData).getHeight() == 75d);
 
     }
 

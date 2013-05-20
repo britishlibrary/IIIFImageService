@@ -23,7 +23,7 @@ public class PercentRegionVariableSizeCalculator {
 
         RequestData requestData = RequestDataGenerator.getTestRequestDataPercentRegionFullSize();
 
-        Dimension size = regionSizeCalculator.getSize(imageMetadata, requestData);
+        Dimension size = regionSizeCalculator.getSizeForImageManipulation(imageMetadata, requestData);
         Dimension expected = new Dimension(1410, 2600);
 
         assertEquals(expected, size);

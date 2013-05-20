@@ -46,12 +46,14 @@ public class KakaduCommandBuilder {
 
         if (requestData.isRegionPercentage()) {
             requestedRegion = switchCoordsForRegionExtraction(requestedRegion);
-            startX = new BigDecimal(requestedRegion.x * imageMetadata.getHeight()).movePointLeft(2);
-            startY = new BigDecimal(requestedRegion.y * imageMetadata.getWidth()).movePointLeft(2);
+            // requestedRegion = regionSizeCalculator.getRegionCoordinatesFromPercent(imageMetadata, requestedRegion);
+
+            startX = new BigDecimal(requestedRegion.x);
+            startY = new BigDecimal(requestedRegion.y);
             // double.Parse(regions[2]) * imageSize.Height;
-            tileHeight = new BigDecimal(requestedRegion.height * imageMetadata.getHeight()).movePointLeft(2);
+            tileHeight = new BigDecimal(requestedRegion.height);
             // double.Parse(regions[3]) * imageSize.Width;
-            tileWidth = new BigDecimal(requestedRegion.width * imageMetadata.getWidth()).movePointLeft(2);
+            tileWidth = new BigDecimal(requestedRegion.width);
         }
 
         if (requestData.isRegionPixels()) {
@@ -190,6 +192,7 @@ public class KakaduCommandBuilder {
         if (!requestData.isRegionFull()) {
             if (requestData.isRegionPercentage()) {
                 requestedRegion = switchCoordsForRegionExtraction(requestedRegion);
+                requestedRegion = regionSizeCalculator.splitRegion(requestData);
                 startX = new BigDecimal(requestedRegion.x).movePointLeft(2);
                 startY = new BigDecimal(requestedRegion.y).movePointLeft(2);
                 tileWidth = new BigDecimal(requestedRegion.width).movePointLeft(2);

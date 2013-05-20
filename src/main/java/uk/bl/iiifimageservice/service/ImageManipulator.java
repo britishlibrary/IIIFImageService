@@ -22,7 +22,7 @@ public class ImageManipulator {
     public BufferedImage resizeImage(BufferedImage extractedImage, RequestData requestData,
             ImageMetadata jp2ImageMetadata) {
 
-        Dimension requestedSize = regionSizeCalculator.getSize(jp2ImageMetadata, requestData);
+        Dimension requestedSize = regionSizeCalculator.getSizeForImageManipulation(jp2ImageMetadata, requestData);
 
         if (requestData.isSizeBestFit()) {
             // TODO best fit resizing

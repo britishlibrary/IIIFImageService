@@ -21,7 +21,7 @@ public class FullRegionVariableSizeCalculatorTest {
 
         RequestData requestData = RequestDataGenerator.getTestRequestDataFullRegionFullSize();
 
-        Dimension size = regionSizeCalculator.getSize(imageMetadata, requestData);
+        Dimension size = regionSizeCalculator.getSizeForImageManipulation(imageMetadata, requestData);
         Dimension expected = new Dimension(4700, 6500);
 
         assertEquals(expected, size);
@@ -33,7 +33,7 @@ public class FullRegionVariableSizeCalculatorTest {
 
         RequestData requestData = RequestDataGenerator.getTestRequestDataFullRegionSizeSetByWidth();
 
-        Dimension size = regionSizeCalculator.getSize(imageMetadata, requestData);
+        Dimension size = regionSizeCalculator.getSizeForImageManipulation(imageMetadata, requestData);
         Dimension expected = new Dimension(600, 829);
 
         assertEquals(expected, size);
@@ -45,7 +45,7 @@ public class FullRegionVariableSizeCalculatorTest {
 
         RequestData requestData = RequestDataGenerator.getTestRequestDataFullRegionSizeSetByHeight();
 
-        Dimension size = regionSizeCalculator.getSize(imageMetadata, requestData);
+        Dimension size = regionSizeCalculator.getSizeForImageManipulation(imageMetadata, requestData);
         Dimension expected = new Dimension(723, 1000);
 
         assertEquals(expected, size);
@@ -57,7 +57,7 @@ public class FullRegionVariableSizeCalculatorTest {
 
         RequestData requestData = RequestDataGenerator.getTestRequestDataFullRegionSizeSetByPixels();
 
-        Dimension size = regionSizeCalculator.getSize(imageMetadata, requestData);
+        Dimension size = regionSizeCalculator.getSizeForImageManipulation(imageMetadata, requestData);
         Dimension expected = new Dimension(600, 1000);
 
         assertEquals(expected, size);
@@ -69,7 +69,7 @@ public class FullRegionVariableSizeCalculatorTest {
 
         RequestData requestData = RequestDataGenerator.getTestRequestDataFullRegionSizeSetByPercent();
 
-        Dimension size = regionSizeCalculator.getSize(imageMetadata, requestData);
+        Dimension size = regionSizeCalculator.getSizeForImageManipulation(imageMetadata, requestData);
         Dimension expected = new Dimension(940, 1300);
 
         assertEquals(expected, size);

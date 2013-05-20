@@ -22,29 +22,24 @@ public class RegionSizeCalculator {
 
     public Rectangle getRegionCoordinates(ImageMetadata imageMetadata, RequestData requestData) {
 
-        Point p = new Point();
-        Dimension d = new Dimension();
-
         if (requestData.isRegionFull()) {
-            return new Rectangle(p, new Dimension(imageMetadata.getWidth(), imageMetadata.getHeight()));
+            return new Rectangle(new Point(), new Dimension(imageMetadata.getWidth(), imageMetadata.getHeight()));
         }
 
         String regionToSplit = requestData.getRegion();
 
         if (requestData.isRegionPercentage()) {
             regionToSplit = removePercentageLiteral(regionToSplit);
+            String[] coords = regionToSplit.split(RequestData.REQUEST_DELIMITER);
+            return getRegionCoordinatesFromPercent(imageMetadata, convertCoordinatesToRectangle(coords));
         }
 
         String[] coords = regionToSplit.split(RequestData.REQUEST_DELIMITER);
-        p.x = Integer.parseInt(coords[0]);
-        p.y = Integer.parseInt(coords[1]);
-        d.width = Integer.parseInt(coords[2]);
-        d.height = Integer.parseInt(coords[3]);
 
-        return new Rectangle(p, d);
+        return convertCoordinatesToRectangle(coords);
     }
 
-    public Dimension getSize(ImageMetadata imageMetadata, RequestData requestData) {
+    public Dimension getSizeForImageManipulation(ImageMetadata imageMetadata, RequestData requestData) {
 
         Dimension d = new Dimension();
 
@@ -125,7 +120,8 @@ public class RegionSizeCalculator {
                     .intValue();
             d.height = sizePercent.multiply(new BigDecimal(regionSize.height).setScale(0, RoundingMode.HALF_EVEN))
                     .intValue();
-            return d;
+            // return d;
+            return new Dimension();
         }
 
         d.width = Integer.parseInt(coords[0]);
@@ -136,6 +132,48 @@ public class RegionSizeCalculator {
 
     private String removePercentageLiteral(String value) {
         return value.substring(RequestData.PERCENTAGE_LITERAL.length());
+    }
+
+    public Rectangle getRegionCoordinatesFromPercent(ImageMetadata imageMetadata, Rectangle requestedRegionAsPercent) {
+
+        Point p = new Point();
+        Dimension d = new Dimension();
+
+        p.x = requestedRegionAsPercent.x * imageMetadata.getHeight() / 100;
+        p.y = requestedRegionAsPercent.y * imageMetadata.getWidth() / 100;
+
+        d.width = requestedRegionAsPercent.width * imageMetadata.getWidth() / 100;
+        d.height = requestedRegionAsPercent.height * imageMetadata.getHeight() / 100;
+
+        return new Rectangle(p, d);
+    }
+
+    public Rectangle splitRegion(RequestData requestData) {
+
+        String regionToSplit = requestData.getRegion();
+
+        if (requestData.isRegionPercentage()) {
+            regionToSplit = removePercentageLiteral(regionToSplit);
+        }
+
+        String[] coords = regionToSplit.split(RequestData.REQUEST_DELIMITER);
+
+        return convertCoordinatesToRectangle(coords);
+
+    }
+
+    public Rectangle convertCoordinatesToRectangle(String[] coords) {
+
+        Point p = new Point();
+        Dimension d = new Dimension();
+
+        p.x = Integer.parseInt(coords[0]);
+        p.y = Integer.parseInt(coords[1]);
+        d.width = Integer.parseInt(coords[2]);
+        d.height = Integer.parseInt(coords[3]);
+
+        return new Rectangle(p, d);
+
     }
 
 }

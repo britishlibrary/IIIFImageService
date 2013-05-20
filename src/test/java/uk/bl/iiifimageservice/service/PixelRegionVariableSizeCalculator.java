@@ -22,7 +22,7 @@ public class PixelRegionVariableSizeCalculator {
 
         RequestData requestData = RequestDataGenerator.getTestRequestDataPixelRegionFullSize();
 
-        Dimension size = regionSizeCalculator.getSize(imageMetadata, requestData);
+        Dimension size = regionSizeCalculator.getSizeForImageManipulation(imageMetadata, requestData);
         Dimension expected = new Dimension(1200, 1300);
 
         assertEquals(expected, size);
@@ -34,7 +34,7 @@ public class PixelRegionVariableSizeCalculator {
 
         RequestData requestData = RequestDataGenerator.getTestRequestDataPixelRegionSizeSetByWidth();
 
-        Dimension size = regionSizeCalculator.getSize(imageMetadata, requestData);
+        Dimension size = regionSizeCalculator.getSizeForImageManipulation(imageMetadata, requestData);
         Dimension expected = new Dimension(600, 650);
 
         assertEquals(expected, size);
@@ -46,7 +46,7 @@ public class PixelRegionVariableSizeCalculator {
 
         RequestData requestData = RequestDataGenerator.getTestRequestDataPixelRegionSizeSetByHeight();
 
-        Dimension size = regionSizeCalculator.getSize(imageMetadata, requestData);
+        Dimension size = regionSizeCalculator.getSizeForImageManipulation(imageMetadata, requestData);
         Dimension expected = new Dimension(553, 600);
 
         assertEquals(expected, size);
@@ -58,7 +58,7 @@ public class PixelRegionVariableSizeCalculator {
 
         RequestData requestData = RequestDataGenerator.getTestRequestDataPixelRegionSizeSetByPixels();
 
-        Dimension size = regionSizeCalculator.getSize(imageMetadata, requestData);
+        Dimension size = regionSizeCalculator.getSizeForImageManipulation(imageMetadata, requestData);
         Dimension expected = new Dimension(600, 1300);
 
         assertEquals(expected, size);
