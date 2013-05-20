@@ -77,7 +77,7 @@ public class RequestData {
         return region.startsWith(PERCENTAGE_LITERAL);
     }
 
-    public boolean isRegionPixels() {
+    public boolean isRegionCoordinates() {
         return Character.isDigit(region.charAt(0));
     }
 

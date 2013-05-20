@@ -22,11 +22,10 @@ public class KakaduCommandBuilder {
     @Autowired
     private RegionSizeCalculator regionSizeCalculator;
 
-    public Results getExtractorValues(ImageMetadata imageMetadata, RequestData requestData) {
+    public int getExtractorValues(ImageMetadata imageMetadata, RequestData requestData) {
 
-        MathContext precisonTwo = new MathContext(10, RoundingMode.HALF_EVEN);
+        MathContext precisonTen = new MathContext(10, RoundingMode.HALF_EVEN);
         Rectangle requestedRegion = regionSizeCalculator.getRegionCoordinates(imageMetadata, requestData);
-
         Dimension requestedSize = regionSizeCalculator.getSizeForExtraction(imageMetadata, requestData);
         BigDecimal requestedSizeWidth = new BigDecimal(requestedSize.width);
         BigDecimal requestedSizeHeight = new BigDecimal(requestedSize.height);
@@ -34,40 +33,25 @@ public class KakaduCommandBuilder {
         BigDecimal scale = BigDecimal.ONE;
         BigDecimal scaleX = BigDecimal.ONE;
         BigDecimal scaleY = BigDecimal.ONE;
-
-        BigDecimal startX = BigDecimal.ZERO; // full region
-        BigDecimal startY = BigDecimal.ZERO; // full region
         BigDecimal tileHeight = BigDecimal.ONE;
         BigDecimal tileWidth = BigDecimal.ONE;
+
         BigDecimal widthScale = new BigDecimal(String.valueOf((double) requestedSize.width / imageMetadata.getWidth()),
-                precisonTwo);
+                precisonTen);
         BigDecimal heightScale = new BigDecimal(String.valueOf((double) requestedSize.height
-                / imageMetadata.getHeight()), precisonTwo);
+                / imageMetadata.getHeight()), precisonTen);
 
         if (requestData.isRegionPercentage()) {
             requestedRegion = switchCoordsForRegionExtraction(requestedRegion);
-            // requestedRegion = regionSizeCalculator.getRegionCoordinatesFromPercent(imageMetadata, requestedRegion);
-
-            startX = new BigDecimal(requestedRegion.x);
-            startY = new BigDecimal(requestedRegion.y);
-            // double.Parse(regions[2]) * imageSize.Height;
             tileHeight = new BigDecimal(requestedRegion.height);
-            // double.Parse(regions[3]) * imageSize.Width;
             tileWidth = new BigDecimal(requestedRegion.width);
         }
 
-        if (requestData.isRegionPixels()) {
+        if (requestData.isRegionCoordinates()) {
             requestedRegion = switchCoordsForRegionExtraction(requestedRegion);
-            startX = new BigDecimal(requestedRegion.x);
-            startY = new BigDecimal(requestedRegion.y);
-            // double.Parse(regions[2]) * imageSize.Height;
             tileHeight = new BigDecimal(requestedRegion.height);
-            // double.Parse(regions[3]) * imageSize.Width;
             tileWidth = new BigDecimal(requestedRegion.width);
         }
-
-        startX = BigDecimal.ZERO;
-        startY = BigDecimal.ZERO;
 
         // a resize
         if (requestData.resizeImage()) {
@@ -80,18 +64,18 @@ public class KakaduCommandBuilder {
                 } else {
                     scale = scaleY;
                 }
-                tileWidth = new BigDecimal(String.valueOf(imageMetadata.getWidth())).multiply(scale, precisonTwo);
-                tileHeight = new BigDecimal(String.valueOf(imageMetadata.getHeight())).multiply(scale, precisonTwo);
+                tileWidth = new BigDecimal(String.valueOf(imageMetadata.getWidth())).multiply(scale, precisonTen);
+                tileHeight = new BigDecimal(String.valueOf(imageMetadata.getHeight())).multiply(scale, precisonTen);
 
             } else if (requestedSize.width != 0 && requestedSize.height != 0) {
                 if (tileWidth.compareTo(BigDecimal.ZERO) > 0) { // tilewidth > 0
-                    scaleX = requestedSizeWidth.divide(tileWidth, precisonTwo);
+                    scaleX = requestedSizeWidth.divide(tileWidth, precisonTen);
                 } else {
                     scaleX = widthScale;
                 }
 
                 if (tileHeight.compareTo(BigDecimal.ZERO) > 0) { // tileheight > 0
-                    scaleY = requestedSizeHeight.divide(tileHeight, precisonTwo);
+                    scaleY = requestedSizeHeight.divide(tileHeight, precisonTen);
                 } else {
                     scaleY = heightScale;
                 }
@@ -106,7 +90,7 @@ public class KakaduCommandBuilder {
 
             } else if (requestedSize.width > requestedSize.height) {
                 if (tileWidth.compareTo(BigDecimal.ZERO) > 0) {
-                    scale = (new BigDecimal(requestedSize.width).divide(tileWidth, precisonTwo));
+                    scale = (new BigDecimal(requestedSize.width).divide(tileWidth, precisonTen));
                 } else {
                     scale = widthScale;
                 }
@@ -114,7 +98,7 @@ public class KakaduCommandBuilder {
                 scaleY = scaleX = scale;
             } else {
                 if (tileHeight.compareTo(BigDecimal.ZERO) > 0) {
-                    scale = (new BigDecimal(requestedSize.height).divide(tileHeight, precisonTwo));
+                    scale = (new BigDecimal(requestedSize.height).divide(tileHeight, precisonTen));
                 } else {
                     scale = heightScale;
                 }
@@ -133,13 +117,13 @@ public class KakaduCommandBuilder {
         // size best fit
         if (requestData.isSizeBestFit()) {
             if (tileWidth.compareTo(BigDecimal.ZERO) > 0) {
-                scaleX = requestedSizeWidth.divide(tileWidth, precisonTwo); // p_state.Width / tilewidth;
+                scaleX = requestedSizeWidth.divide(tileWidth, precisonTen); // p_state.Width / tilewidth;
             } else {
                 scaleX = widthScale;
             }
 
             if (tileHeight.compareTo(BigDecimal.ZERO) > 0) {
-                scaleY = requestedSizeHeight.divide(tileHeight, precisonTwo); // p_state.Height / tileheight;
+                scaleY = requestedSizeHeight.divide(tileHeight, precisonTen); // p_state.Height / tileheight;
             } else {
                 scaleY = heightScale;
             }
@@ -154,9 +138,9 @@ public class KakaduCommandBuilder {
             if (requestData.isRegionFull()) { // (p_state.Region.Equals("all"))
                 // int.Parse(Math.Round(imageSize.Height * scale).ToString());
 
-                tileHeight = new BigDecimal(imageMetadata.getHeight()).multiply(scale, precisonTwo);
+                tileHeight = new BigDecimal(imageMetadata.getHeight()).multiply(scale, precisonTen);
                 // int.Parse(Math.Round(imageSize.Width * scale).ToString());
-                tileWidth = new BigDecimal(imageMetadata.getWidth()).multiply(scale, precisonTwo);
+                tileWidth = new BigDecimal(imageMetadata.getWidth()).multiply(scale, precisonTen);
             }
 
         } // end size best fit
@@ -169,7 +153,6 @@ public class KakaduCommandBuilder {
             if (requestData.isRegionFull()) // (p_state.Region.Equals("all"))
             {
                 // int.Parse(Math.Round(imageSize.Height * scale).ToString());
-                // two values below calculated elsewhere. See RegionSizeCalculator
                 tileHeight = requestedSizeHeight;
                 // int.Parse(Math.Round(imageSize.Width * scale).ToString());
                 tileWidth = requestedSizeWidth;
@@ -188,7 +171,36 @@ public class KakaduCommandBuilder {
 
         }
 
+        // Convert.ToInt32(1 / scale);
+        int reduce = BigDecimal.ONE.divide(scale, precisonTen).setScale(0, RoundingMode.HALF_EVEN).intValue();
+        if (reduce > 0) {
+            reduce = (int) Math.floor(logOfBase(2.5, reduce)); // Convert.ToInt32(Math.Floor(Math.Log(reduce, 2.5)));
+        }
+
+        log.debug("reduce " + reduce + "]");
+
+        return reduce;
+    }
+
+    public double logOfBase(double base, int num) {
+        return Math.log(num) / Math.log(base);
+    }
+
+    private Rectangle switchCoordsForRegionExtraction(Rectangle correct) {
+
+        return new Rectangle(correct.y, correct.x, correct.height, correct.width);
+    }
+
+    public String getRegionCommandValue(ImageMetadata imageMetadata, RequestData requestData) {
+
+        Rectangle requestedRegion = regionSizeCalculator.getRegionCoordinates(imageMetadata, requestData);
+
+        BigDecimal startX = null;
+        BigDecimal startY = null;
+        BigDecimal tileWidth = null;
+        BigDecimal tileHeight = null;
         String regionValue = "";
+
         if (!requestData.isRegionFull()) {
             if (requestData.isRegionPercentage()) {
                 requestedRegion = switchCoordsForRegionExtraction(requestedRegion);
@@ -200,8 +212,7 @@ public class KakaduCommandBuilder {
 
             }
 
-            if (requestData.isRegionPixels()) {
-                requestedRegion = switchCoordsForRegionExtraction(requestedRegion);
+            if (requestData.isRegionCoordinates()) {
                 startX = new BigDecimal(String.valueOf((double) requestedRegion.x / imageMetadata.getWidth()));
                 startY = new BigDecimal(String.valueOf((double) requestedRegion.y / imageMetadata.getHeight()));
                 tileWidth = new BigDecimal(String.valueOf((double) requestedRegion.width / imageMetadata.getWidth()));
@@ -212,24 +223,11 @@ public class KakaduCommandBuilder {
                     + tileHeight.toPlainString() + "," + tileWidth.toPlainString() + "}";
 
         }
-        // Convert.ToInt32(1 / scale);
-        int reduce = BigDecimal.ONE.divide(scale, precisonTwo).setScale(0, RoundingMode.HALF_EVEN).intValue();
-        if (reduce > 0) {
-            reduce = (int) Math.floor(logOfBase(2.5, reduce)); // Convert.ToInt32(Math.Floor(Math.Log(reduce, 2.5)));
-        }
 
         log.debug("regionValue [" + regionValue + "]");
-        log.debug("reduce " + reduce + "]");
 
-        return new Results(regionValue, reduce);
+        return regionValue;
+
     }
 
-    public double logOfBase(double base, int num) {
-        return Math.log(num) / Math.log(base);
-    }
-
-    private Rectangle switchCoordsForRegionExtraction(Rectangle correct) {
-
-        return new Rectangle(correct.y, correct.x, correct.height, correct.width);
-    }
 }

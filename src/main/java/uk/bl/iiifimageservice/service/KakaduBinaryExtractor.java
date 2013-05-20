@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 
@@ -53,8 +54,6 @@ public class KakaduBinaryExtractor implements ImageService {
 
         Path bmpFile = fileSystemReader.getOutputFilename(requestData.getIdentifier());
 
-        // TODO replace output filename with something more resilient
-        // TODO add reduce flag value and region
         ProcessBuilder processBuilder = new ProcessBuilder(buildExtractImageCommandString(requestData,
                 jp2ImageMetadata, bmpFile));
         processBuilder.redirectErrorStream(true);
@@ -128,24 +127,23 @@ public class KakaduBinaryExtractor implements ImageService {
 
     private String[] buildExtractImageCommandString(RequestData requestData, ImageMetadata imageMetadata, Path bmpPath) {
 
-        Results results = kakaduCommandBuilder.getExtractorValues(imageMetadata, requestData);
+        int reduce = kakaduCommandBuilder.getExtractorValues(imageMetadata, requestData);
+        String regionCommandValue = kakaduCommandBuilder.getRegionCommandValue(imageMetadata, requestData);
 
         String jp2ImageFilename = fileSystemReader.getImagePathFromIdentifier(requestData.getIdentifier()).toString();
 
-        String[] commandString = null;
-        if (StringUtils.isEmpty(results.getRegion())) {
-            commandString = new String[] { kakaduBinaryPath, "-resilient", "-quiet", "-reduce",
-                    String.valueOf(results.getReduce()), "-i", jp2ImageFilename, "-o", bmpPath.toString() };
-        } else {
-            commandString = new String[] { kakaduBinaryPath, "-resilient", "-quiet", "-reduce",
-                    String.valueOf(results.getReduce()), "-region", results.getRegion(), "-i", jp2ImageFilename, "-o",
-                    bmpPath.toString() };
+        String[] commandParameters = new String[] { kakaduBinaryPath, "-resilient", "-quiet", "-reduce",
+                String.valueOf(reduce), "-i", jp2ImageFilename, "-o", bmpPath.toString() };
+
+        if (!StringUtils.isEmpty(regionCommandValue)) {
+            commandParameters = Arrays.copyOf(commandParameters, commandParameters.length + 2);
+            commandParameters[commandParameters.length - 2] = "-region";
+            commandParameters[commandParameters.length - 1] = regionCommandValue;
         }
 
-        log.debug("Extract image shell command [" + StringUtils.join(commandString, " ") + "]");
+        log.debug("Extract image shell command [" + StringUtils.join(commandParameters, " ") + "]");
 
-        return commandString;
+        return commandParameters;
 
     }
-
 }

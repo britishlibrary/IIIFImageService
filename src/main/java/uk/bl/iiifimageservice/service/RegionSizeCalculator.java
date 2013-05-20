@@ -20,6 +20,14 @@ import uk.bl.iiifimageservice.domain.RequestData;
 @Service
 public class RegionSizeCalculator {
 
+    /**
+     * Returns the requested region as pixel values. The three region types are catered for i.e. full, percentage and
+     * absolute.
+     * 
+     * @param imageMetadata
+     * @param requestData
+     * @return
+     */
     public Rectangle getRegionCoordinates(ImageMetadata imageMetadata, RequestData requestData) {
 
         if (requestData.isRegionFull()) {
@@ -39,6 +47,21 @@ public class RegionSizeCalculator {
         return convertCoordinatesToRectangle(coords);
     }
 
+    /**
+     * When manipulating the extracted region the size is calculated as follows -
+     * <ul>
+     * <li>For full size the original image size is returned.
+     * <li>For a size with width defined the height is a value that maintains the aspect ratio.
+     * <li>For a size with height defined the width is a value that maintains the aspect ratio.
+     * <li>For a size defined by percent the width and height is scaled by the percentage value.
+     * <li>For a size that has width and height explicitly defined return those values.
+     * <li>TODO For a best fit size
+     * 
+     * 
+     * @param imageMetadata
+     * @param requestData
+     * @return
+     */
     public Dimension getSizeForImageManipulation(ImageMetadata imageMetadata, RequestData requestData) {
 
         Dimension d = new Dimension();
@@ -85,6 +108,20 @@ public class RegionSizeCalculator {
         return d;
     }
 
+    /**
+     * The calculation of the reduction parameter depends upon the size being in a particular format.
+     * <ul>
+     * <li>For full size the actual image size is returned.
+     * <li>For a size determined by width or height return the requested width or height.
+     * <li>For a size determined by percent return a zero width and height.
+     * <li>For a size that has width and height explicitly defined return those values.
+     * <li>TODO For a best fit size
+     * </ul>
+     * 
+     * @param imageMetadata
+     * @param requestData
+     * @return
+     */
     public Dimension getSizeForExtraction(ImageMetadata imageMetadata, RequestData requestData) {
 
         Dimension d = new Dimension();
@@ -115,13 +152,7 @@ public class RegionSizeCalculator {
         }
 
         if (requestData.isSizePercentageScaled()) {
-            BigDecimal sizePercent = requestData.getSizePercentageAsDecimal();
-            d.width = sizePercent.multiply(new BigDecimal(regionSize.width).setScale(0, RoundingMode.HALF_EVEN))
-                    .intValue();
-            d.height = sizePercent.multiply(new BigDecimal(regionSize.height).setScale(0, RoundingMode.HALF_EVEN))
-                    .intValue();
-            // return d;
-            return new Dimension();
+            return d;
         }
 
         d.width = Integer.parseInt(coords[0]);
@@ -132,20 +163,6 @@ public class RegionSizeCalculator {
 
     private String removePercentageLiteral(String value) {
         return value.substring(RequestData.PERCENTAGE_LITERAL.length());
-    }
-
-    public Rectangle getRegionCoordinatesFromPercent(ImageMetadata imageMetadata, Rectangle requestedRegionAsPercent) {
-
-        Point p = new Point();
-        Dimension d = new Dimension();
-
-        p.x = requestedRegionAsPercent.x * imageMetadata.getHeight() / 100;
-        p.y = requestedRegionAsPercent.y * imageMetadata.getWidth() / 100;
-
-        d.width = requestedRegionAsPercent.width * imageMetadata.getWidth() / 100;
-        d.height = requestedRegionAsPercent.height * imageMetadata.getHeight() / 100;
-
-        return new Rectangle(p, d);
     }
 
     public Rectangle splitRegion(RequestData requestData) {
@@ -162,7 +179,7 @@ public class RegionSizeCalculator {
 
     }
 
-    public Rectangle convertCoordinatesToRectangle(String[] coords) {
+    private Rectangle convertCoordinatesToRectangle(String[] coords) {
 
         Point p = new Point();
         Dimension d = new Dimension();
@@ -174,6 +191,20 @@ public class RegionSizeCalculator {
 
         return new Rectangle(p, d);
 
+    }
+
+    private Rectangle getRegionCoordinatesFromPercent(ImageMetadata imageMetadata, Rectangle requestedRegionAsPercent) {
+
+        Point p = new Point();
+        Dimension d = new Dimension();
+
+        p.x = requestedRegionAsPercent.x * imageMetadata.getHeight() / 100;
+        p.y = requestedRegionAsPercent.y * imageMetadata.getWidth() / 100;
+
+        d.width = requestedRegionAsPercent.width * imageMetadata.getWidth() / 100;
+        d.height = requestedRegionAsPercent.height * imageMetadata.getHeight() / 100;
+
+        return new Rectangle(p, d);
     }
 
 }
