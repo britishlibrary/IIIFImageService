@@ -1,4 +1,4 @@
-package uk.bl.iiifimageservice.service;
+package uk.bl.iiifimageservice.service.kakadubinary;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -18,9 +18,13 @@ import org.springframework.stereotype.Service;
 
 import uk.bl.iiifimageservice.domain.ImageMetadata;
 import uk.bl.iiifimageservice.domain.RequestData;
+import uk.bl.iiifimageservice.service.FileSystemReader;
+import uk.bl.iiifimageservice.service.ImageManipulator;
+import uk.bl.iiifimageservice.service.ImageService;
+import uk.bl.iiifimageservice.service.LogFileExtractor;
 
 /**
- * Implementation of the ImageService interface using the kdu_expand.exe binary.
+ * Implementation of the ImageService interface using the kdu_expand binary.
  * 
  * @author pblake
  * 
@@ -40,7 +44,7 @@ public class KakaduBinaryExtractor implements ImageService {
     private FileSystemReader fileSystemReader;
 
     @Autowired
-    private KakaduCommandBuilder kakaduCommandBuilder;
+    private KakaduParameterCalculator kakaduParameterCalculator;
 
     @Autowired
     private ImageManipulator imageManipulator;
@@ -127,8 +131,8 @@ public class KakaduBinaryExtractor implements ImageService {
 
     private String[] buildExtractImageCommandString(RequestData requestData, ImageMetadata imageMetadata, Path bmpPath) {
 
-        int reduce = kakaduCommandBuilder.getExtractorValues(imageMetadata, requestData);
-        String regionCommandValue = kakaduCommandBuilder.getRegionCommandValue(imageMetadata, requestData);
+        int reduce = kakaduParameterCalculator.calculateReduceParameter(imageMetadata, requestData);
+        String regionCommandValue = kakaduParameterCalculator.calculateRegionExtractionParameter(imageMetadata, requestData);
 
         String jp2ImageFilename = fileSystemReader.getImagePathFromIdentifier(requestData.getIdentifier()).toString();
 

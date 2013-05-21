@@ -81,19 +81,19 @@ public class RegionSizeCalculator {
 
         String[] coords = sizeToSplit.split(RequestData.REQUEST_DELIMITER);
 
-        if (requestData.isAspectRatioDeterminedByWidth()) {
+        if (requestData.isSizeHeightDeterminedByWidth()) {
             d.width = Integer.parseInt(coords[0]);
             d.height = (d.width * regionSize.height) / regionSize.width;
             return d;
         }
 
-        if (requestData.isAspectRatioDeterminedByHeight()) {
+        if (requestData.isSizeWidthDeterminedByHeight()) {
             d.height = Integer.parseInt(coords[1]);
             d.width = (d.height * regionSize.width) / regionSize.height;
             return d;
         }
 
-        if (requestData.isSizePercentageScaled()) {
+        if (requestData.isSizePercentage()) {
             BigDecimal sizePercent = requestData.getSizePercentageAsDecimal();
             d.width = sizePercent.multiply(new BigDecimal(regionSize.width).setScale(0, RoundingMode.HALF_EVEN))
                     .intValue();
@@ -126,11 +126,8 @@ public class RegionSizeCalculator {
 
         Dimension d = new Dimension();
 
-        Dimension regionSize = null;
-        regionSize = getRegionCoordinates(imageMetadata, requestData).getSize();
-
         if (requestData.isSizeFull()) {
-            return regionSize;
+            return d;
         }
 
         String sizeToSplit = requestData.getSize();
@@ -141,17 +138,17 @@ public class RegionSizeCalculator {
 
         String[] coords = sizeToSplit.split(RequestData.REQUEST_DELIMITER);
 
-        if (requestData.isAspectRatioDeterminedByWidth()) {
+        if (requestData.isSizeHeightDeterminedByWidth()) {
             d.width = Integer.parseInt(coords[0]);
             return d;
         }
 
-        if (requestData.isAspectRatioDeterminedByHeight()) {
+        if (requestData.isSizeWidthDeterminedByHeight()) {
             d.height = Integer.parseInt(coords[1]);
             return d;
         }
 
-        if (requestData.isSizePercentageScaled()) {
+        if (requestData.isSizePercentage()) {
             return d;
         }
 

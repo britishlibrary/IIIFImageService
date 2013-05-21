@@ -77,7 +77,7 @@ public class RequestData {
         return region.startsWith(PERCENTAGE_LITERAL);
     }
 
-    public boolean isRegionCoordinates() {
+    public boolean isRegionAbsolute() {
         return Character.isDigit(region.charAt(0));
     }
 
@@ -95,7 +95,7 @@ public class RequestData {
      * 
      * @return
      */
-    public boolean isAspectRatioDeterminedByWidth() {
+    public boolean isSizeHeightDeterminedByWidth() {
         return size.endsWith(REQUEST_DELIMITER);
     }
 
@@ -104,7 +104,7 @@ public class RequestData {
      * 
      * @return
      */
-    public boolean isAspectRatioDeterminedByHeight() {
+    public boolean isSizeWidthDeterminedByHeight() {
         return size.startsWith(REQUEST_DELIMITER);
     }
 
@@ -113,7 +113,7 @@ public class RequestData {
      * 
      * @return
      */
-    public boolean isSizePercentageScaled() {
+    public boolean isSizePercentage() {
         return size.startsWith(PERCENTAGE_LITERAL);
     }
 
@@ -134,17 +134,17 @@ public class RequestData {
      * 
      * @return
      */
-    public boolean isSizePixels() {
-        return !(isSizeFull() || isAspectRatioDeterminedByHeight() || isAspectRatioDeterminedByWidth()
-                || isSizePercentageScaled() || isSizeBestFit());
+    public boolean isSizeAbsolute() {
+        return !(isSizeFull() || isSizeWidthDeterminedByHeight() || isSizeHeightDeterminedByWidth()
+                || isSizePercentage() || isSizeBestFit());
     }
 
     private String removePercentageLiteral(String value) {
         return value.substring(PERCENTAGE_LITERAL.length());
     }
 
-    public boolean resizeImage() {
-        return isAspectRatioDeterminedByHeight() || isAspectRatioDeterminedByWidth() || isSizePixels();
+    public boolean isSizeDeterminedByWidthHeight() {
+        return isSizeWidthDeterminedByHeight() || isSizeHeightDeterminedByWidth() || isSizeAbsolute();
     }
 
     @Override
