@@ -8,7 +8,7 @@ import java.nio.file.Path;
  * name as a property called 'file.location.strategy' in the config.properties file.
  * 
  * There are two currently defined - {@link SimpleFileLocationStrategy} and
- * {@link SameDirectoryAndFilenameNoExtensionLocationStrategy}
+ * {@link DirectoryFileNoExtensionFileLocationStrategy}
  * 
  * @author pblake
  * 

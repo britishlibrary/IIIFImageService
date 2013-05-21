@@ -14,7 +14,7 @@ public class RequestData {
 
     private String size;
 
-    private Float rotation;
+    private Integer rotation;
 
     private String quality;
 
@@ -45,11 +45,11 @@ public class RequestData {
         this.size = size;
     }
 
-    public Float getRotation() {
+    public Integer getRotation() {
         return rotation;
     }
 
-    public void setRotation(Float rotation) {
+    public void setRotation(Integer rotation) {
         this.rotation = rotation;
     }
 
@@ -145,6 +145,14 @@ public class RequestData {
 
     public boolean isSizeDeterminedByWidthHeight() {
         return isSizeWidthDeterminedByHeight() || isSizeHeightDeterminedByWidth() || isSizeAbsolute();
+    }
+
+    public boolean isARotation() {
+        return rotation != 0;
+    }
+
+    public boolean isSizeChangeForRotation() {
+        return rotation == 90 || rotation == 270;
     }
 
     @Override

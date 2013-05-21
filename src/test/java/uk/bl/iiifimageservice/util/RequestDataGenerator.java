@@ -12,7 +12,7 @@ public class RequestDataGenerator {
         requestData.setIdentifier("1E34750D-38DB-4825-A38A-B60A345E591C");
         requestData.setQuality("color");
         requestData.setRegion("full");
-        requestData.setRotation(0f);
+        requestData.setRotation(0);
         requestData.setSize("full");
 
         return requestData;

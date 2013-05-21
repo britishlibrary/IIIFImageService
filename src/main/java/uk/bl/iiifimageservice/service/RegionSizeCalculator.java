@@ -34,21 +34,26 @@ public class RegionSizeCalculator {
             return new Rectangle(new Point(), new Dimension(imageMetadata.getWidth(), imageMetadata.getHeight()));
         }
 
-        String regionToSplit = requestData.getRegion();
+        Rectangle regionValues = getRegionValues(requestData);
+        if (requestData.isRegionPercentage()) {
+            regionValues = getRegionCoordinatesFromPercent(imageMetadata, regionValues);
+        }
+        return regionValues;
 
+    }
+
+    private Rectangle getRegionValues(RequestData requestData) {
+        String regionToSplit = requestData.getRegion();
         if (requestData.isRegionPercentage()) {
             regionToSplit = removePercentageLiteral(regionToSplit);
-            String[] coords = regionToSplit.split(RequestData.REQUEST_DELIMITER);
-            return getRegionCoordinatesFromPercent(imageMetadata, convertCoordinatesToRectangle(coords));
         }
-
         String[] coords = regionToSplit.split(RequestData.REQUEST_DELIMITER);
 
         return convertCoordinatesToRectangle(coords);
     }
 
     /**
-     * When manipulating the extracted region the size is calculated as follows -
+     * When manipulating the extracted image region the size is calculated as follows -
      * <ul>
      * <li>For full size the original image size is returned.
      * <li>For a size with width defined the height is a value that maintains the aspect ratio.
@@ -66,8 +71,7 @@ public class RegionSizeCalculator {
 
         Dimension d = new Dimension();
 
-        Dimension regionSize = null;
-        regionSize = getRegionCoordinates(imageMetadata, requestData).getSize();
+        Dimension regionSize = getRegionCoordinates(imageMetadata, requestData).getSize();
 
         if (requestData.isSizeFull()) {
             return regionSize;
@@ -102,16 +106,50 @@ public class RegionSizeCalculator {
             return d;
         }
 
+        if (requestData.isSizeBestFit()) {
+            if (!requestData.isRegionFull()) {
+                regionSize = getRegionValues(requestData).getSize();
+            }
+            BigDecimal scaleX = new BigDecimal(String.valueOf((double) Integer.parseInt(coords[0]) / regionSize.width));
+            BigDecimal scaleY = new BigDecimal(String.valueOf((double) Integer.parseInt(coords[1]) / regionSize.height));
+
+            if (scaleX.compareTo(scaleY) < 0) {
+                d.width = (new BigDecimal(regionSize.width)).multiply(scaleX).setScale(0, RoundingMode.HALF_EVEN)
+                        .intValue();
+                d.height = (new BigDecimal(regionSize.height)).multiply(scaleX).setScale(0, RoundingMode.HALF_EVEN)
+                        .intValue();
+            } else {
+                d.width = (new BigDecimal(regionSize.width)).multiply(scaleY).setScale(0, RoundingMode.HALF_EVEN)
+                        .intValue();
+                d.height = (new BigDecimal(regionSize.height)).multiply(scaleY).setScale(0, RoundingMode.HALF_EVEN)
+                        .intValue();
+
+            }
+            return d;
+        }
+
         d.width = Integer.parseInt(coords[0]);
         d.height = Integer.parseInt(coords[1]);
 
         return d;
     }
 
+    public Dimension resizeForRotation(RequestData requestData, Dimension size) {
+
+        if (requestData.isARotation() && requestData.isSizeChangeForRotation()) {
+            // switch
+            size.width = size.width ^ size.height;
+            size.height = size.width ^ size.height;
+            size.width = size.width ^ size.height;
+        }
+
+        return size;
+    }
+
     /**
      * The calculation of the reduction parameter depends upon the size being in a particular format.
      * <ul>
-     * <li>For full size the actual image size is returned.
+     * <li>For full size return a zero width and height.
      * <li>For a size determined by width or height return the requested width or height.
      * <li>For a size determined by percent return a zero width and height.
      * <li>For a size that has width and height explicitly defined return those values.
