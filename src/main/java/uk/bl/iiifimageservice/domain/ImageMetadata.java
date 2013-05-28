@@ -13,9 +13,9 @@ import javax.xml.bind.annotation.XmlType;
  * @author pblake
  * 
  */
+@XmlRootElement(name = "info")
 @XmlType(propOrder = { "identifier", "width", "height", "scaleFactors", "tileWidth", "tileHeight", "formats",
         "qualities", "profile" })
-@XmlRootElement(name = "info", namespace = "http://library.stanford.edu/iiif/image-api/ns/")
 public class ImageMetadata {
 
     private String identifier;

@@ -1,4 +1,4 @@
-package uk.bl.iiifimageservice.service.filelocation;
+package uk.bl.iiifimageservice.service.imagelocation;
 
 import java.nio.file.Path;
 
@@ -7,13 +7,13 @@ import java.nio.file.Path;
  * across systems. Implementing this interface will enable alternate strategies. To enable a strategy specify the class
  * name as a property called 'file.location.strategy' in the config.properties file.
  * 
- * There are two currently defined - {@link SimpleFileLocationStrategy} and
- * {@link DirectoryFileNoExtensionFileLocationStrategy}
+ * There are two currently defined - {@link SimpleImageLocationStrategy} and
+ * {@link DirectoryFileNoExtensionImageLocationStrategy}
  * 
  * @author pblake
  * 
  */
-public interface FileLocationStrategy {
+public interface ImageLocationStrategy {
 
     public Path getImagePath(String identifier);
 

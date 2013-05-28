@@ -8,14 +8,10 @@ import java.util.List;
 import org.junit.Test;
 
 import uk.bl.iiifimageservice.domain.ImageFormat;
-import uk.bl.iiifimageservice.util.TextDisplayHelper;
 
-//@RunWith(SpringJUnit4ClassRunner.class)
-//@ContextConfiguration
 public class TextDisplayHelperTest {
 
-//    @Autowired
-    TextDisplayHelper textDisplayHelper =  new TextDisplayHelper();
+    TextDisplayHelper textDisplayHelper = new TextDisplayHelper();
 
     @Test
     public void getValuesTest() {
@@ -23,7 +19,7 @@ public class TextDisplayHelperTest {
         List<String> values = textDisplayHelper.getDisplayValuesFrom(ImageFormat.values());
         textDisplayHelper.getDisplayValuesFrom(ImageFormat.values());
 
-        assertTrue("", Arrays.asList("jpg", "png", "gif").equals(values));
+        assertTrue("error with image formats", Arrays.asList("jpg", "png", "gif", "jp2").equals(values));
 
     }
 

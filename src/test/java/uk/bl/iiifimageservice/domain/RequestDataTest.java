@@ -7,13 +7,21 @@ import java.awt.Rectangle;
 import java.math.BigDecimal;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import uk.bl.iiifimageservice.service.RegionSizeCalculator;
 import uk.bl.iiifimageservice.util.ImageMetadataGenerator;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration("classpath:applicationContext-test.xml")
 public class RequestDataTest {
 
-    private RegionSizeCalculator regionSizeCalculator = new RegionSizeCalculator();
+    @Autowired
+    private RegionSizeCalculator regionSizeCalculator;
+
     private ImageMetadata imageMetadata = ImageMetadataGenerator.getTestImageMetadata();
 
     @Test
@@ -95,7 +103,7 @@ public class RequestDataTest {
         requestData.setRegion("full");
 
         assertTrue(requestData.isSizeBestFit());
-        assertTrue(regionSizeCalculator.getSizeForImageManipulation(imageMetadata, requestData).getWidth() == 150d);
+        assertTrue(regionSizeCalculator.getSizeForImageManipulation(imageMetadata, requestData).getWidth() == 54d);
         assertTrue(regionSizeCalculator.getSizeForImageManipulation(imageMetadata, requestData).getHeight() == 75d);
 
     }

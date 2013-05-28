@@ -6,10 +6,12 @@ import java.awt.Rectangle;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import uk.bl.iiifimageservice.domain.ImageMetadata;
 import uk.bl.iiifimageservice.domain.RequestData;
+import uk.bl.iiifimageservice.util.RequestParser;
 
 /**
  * Helper methods for region and size
@@ -19,6 +21,9 @@ import uk.bl.iiifimageservice.domain.RequestData;
  */
 @Service
 public class RegionSizeCalculator {
+
+    @Autowired
+    private RequestParser requestParser;
 
     /**
      * Returns the requested region as pixel values. The three region types are catered for i.e. full, percentage and
@@ -34,22 +39,12 @@ public class RegionSizeCalculator {
             return new Rectangle(new Point(), new Dimension(imageMetadata.getWidth(), imageMetadata.getHeight()));
         }
 
-        Rectangle regionValues = getRegionValues(requestData);
+        Rectangle regionValues = requestParser.getRegionValues(requestData);
         if (requestData.isRegionPercentage()) {
             regionValues = getRegionCoordinatesFromPercent(imageMetadata, regionValues);
         }
         return regionValues;
 
-    }
-
-    private Rectangle getRegionValues(RequestData requestData) {
-        String regionToSplit = requestData.getRegion();
-        if (requestData.isRegionPercentage()) {
-            regionToSplit = removePercentageLiteral(regionToSplit);
-        }
-        String[] coords = regionToSplit.split(RequestData.REQUEST_DELIMITER);
-
-        return convertCoordinatesToRectangle(coords);
     }
 
     /**
@@ -108,7 +103,7 @@ public class RegionSizeCalculator {
 
         if (requestData.isSizeBestFit()) {
             if (!requestData.isRegionFull()) {
-                regionSize = getRegionValues(requestData).getSize();
+                regionSize = requestParser.getRegionValues(requestData).getSize();
             }
             BigDecimal scaleX = new BigDecimal(String.valueOf((double) Integer.parseInt(coords[0]) / regionSize.width));
             BigDecimal scaleY = new BigDecimal(String.valueOf((double) Integer.parseInt(coords[1]) / regionSize.height));
@@ -196,35 +191,9 @@ public class RegionSizeCalculator {
         return d;
     }
 
-    private String removePercentageLiteral(String value) {
-        return value.substring(RequestData.PERCENTAGE_LITERAL.length());
-    }
+    public Rectangle getRegion(RequestData requestData) {
 
-    public Rectangle splitRegion(RequestData requestData) {
-
-        String regionToSplit = requestData.getRegion();
-
-        if (requestData.isRegionPercentage()) {
-            regionToSplit = removePercentageLiteral(regionToSplit);
-        }
-
-        String[] coords = regionToSplit.split(RequestData.REQUEST_DELIMITER);
-
-        return convertCoordinatesToRectangle(coords);
-
-    }
-
-    private Rectangle convertCoordinatesToRectangle(String[] coords) {
-
-        Point p = new Point();
-        Dimension d = new Dimension();
-
-        p.x = Integer.parseInt(coords[0]);
-        p.y = Integer.parseInt(coords[1]);
-        d.width = Integer.parseInt(coords[2]);
-        d.height = Integer.parseInt(coords[3]);
-
-        return new Rectangle(p, d);
+        return requestParser.getRegionValues(requestData);
 
     }
 

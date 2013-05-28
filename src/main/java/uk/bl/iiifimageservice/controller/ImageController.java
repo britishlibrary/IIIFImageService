@@ -1,19 +1,38 @@
 package uk.bl.iiifimageservice.controller;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.concurrent.Callable;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import javax.xml.transform.stream.StreamResult;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindException;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import uk.bl.iiifimageservice.domain.ImageError;
+import uk.bl.iiifimageservice.domain.ImageError.ParameterName;
 import uk.bl.iiifimageservice.domain.ImageMetadata;
 import uk.bl.iiifimageservice.domain.RequestData;
 import uk.bl.iiifimageservice.service.ImageService;
+import uk.bl.iiifimageservice.util.ImageServiceException;
 
 /**
  * Implements the International Image Interoperability Framework Image API 1.0 This version makes asynchronous calls to
@@ -34,11 +53,21 @@ public class ImageController {
     @Autowired
     private ImageService imageService;
 
+    @Autowired
+    private RequestValidator requestValidator;
+
+    @Autowired
+    private Jaxb2Marshaller marshaller;
+
+    @Autowired
+    private MessageSource messageSource;
+
     @RequestMapping(value = "/{identifier}/info", method = RequestMethod.GET)
     public @ResponseBody
-    Callable<ImageMetadata> getImageMetadata(@PathVariable final String identifier) {
+    Callable<ImageMetadata> getImageMetadata(@PathVariable final String identifier, HttpServletResponse response) {
 
-        log.debug("Extracting metadata for image file with identifier [" + identifier + "]");
+        log.info("Extracting metadata for image file with identifier [" + identifier + "]");
+        addLinkHeader(response);
 
         return new Callable<ImageMetadata>() {
             @Override
@@ -50,9 +79,10 @@ public class ImageController {
 
     @RequestMapping(value = "/{identifier}/{region}/{size}/{rotation}/{quality}.{format}", method = RequestMethod.GET)
     public @ResponseBody
-    Callable<byte[]> getImage(final RequestData requestData) {
+    Callable<byte[]> getImage(final @Valid RequestData requestData, HttpServletResponse response) throws Exception {
 
-        log.debug("requesting image for [" + requestData.toString() + "]");
+        log.info("requesting image for [" + requestData.toString() + "]");
+        addLinkHeader(response);
 
         return new Callable<byte[]>() {
             @Override
@@ -62,4 +92,111 @@ public class ImageController {
         };
     }
 
+    /**
+     * If there are any request parameter bind exceptions then extract the first and send the xml response.
+     * 
+     * Note - the xml response is manually marshalled. Usually this should not be required. Check this Spring Framework
+     * Jira for why it's a simple workaround - <a href="https://jira.springsource.org/browse/SPR-9878">SPR-9878</a>
+     * 
+     * @param bindException
+     * @param response
+     * @return
+     */
+    @ExceptionHandler(BindException.class)
+    @ResponseBody
+    public ResponseEntity<String> handleException(BindException bindException, HttpServletResponse response) {
+
+        ImageError imageError = extractErrorFrom(bindException);
+
+        // response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+
+        String errorAsXml = convertImageErrorToXml(imageError);
+
+        return new ResponseEntity<String>(errorAsXml, createExceptionHeaders(), HttpStatus.BAD_REQUEST);
+
+    }
+
+    @ExceptionHandler
+    @ResponseBody
+    public ResponseEntity<String> handleException(ImageServiceException imageServiceException,
+            HttpServletResponse response) {
+
+        ImageError imageError = extractErrorFrom(imageServiceException);
+
+        // response.setStatus(imageServiceException.getStatusCode());
+
+        String errorAsXml = convertImageErrorToXml(imageError);
+
+        return new ResponseEntity<String>(errorAsXml, createExceptionHeaders(),
+                HttpStatus.valueOf(imageServiceException.getStatusCode()));
+
+    }
+
+    @ExceptionHandler({ IOException.class, InterruptedException.class })
+    @ResponseBody
+    public ResponseEntity<String> handleException(Exception exception, HttpServletResponse response) {
+
+        ImageError imageError = extractErrorFrom(exception);
+
+        // response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        String errorAsXml = convertImageErrorToXml(imageError);
+
+        return new ResponseEntity<String>(errorAsXml, createExceptionHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+
+    }
+
+    @InitBinder
+    protected void initBinder(WebDataBinder binder) {
+        binder.setValidator(requestValidator);
+    }
+
+    private ImageError extractErrorFrom(BindException bindException) {
+
+        ParameterName parameterName = ParameterName.valueOf(bindException.getFieldError().getField().toUpperCase());
+        String errorMessage = messageSource.getMessage(bindException.getFieldError().getCode(), null, null);
+        return new ImageError(parameterName, errorMessage);
+
+    }
+
+    private ImageError extractErrorFrom(ImageServiceException imageServiceException) {
+
+        return new ImageError(imageServiceException.getParameterName(), imageServiceException.getMessage());
+
+    }
+
+    private ImageError extractErrorFrom(Exception exception) {
+
+        return new ImageError(ParameterName.UNKNOWN, exception.getMessage());
+
+    }
+
+    private String convertImageErrorToXml(ImageError imageError) {
+        // ugly - see Spring Jira SPR-9878
+        StringWriter writer = new StringWriter();
+        StreamResult result = new StreamResult(writer);
+        marshaller.marshal(imageError, result);
+
+        return writer.toString();
+    }
+
+    private HttpHeaders createExceptionHeaders() {
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.TEXT_XML);
+        headers.add("Link", getLinkHeaderValue());
+
+        return headers;
+
+    }
+
+    private void addLinkHeader(HttpServletResponse response) {
+
+        response.addHeader("Link", getLinkHeaderValue());
+
+    }
+
+    private String getLinkHeaderValue() {
+        return "<" + imageService.getComplianceLevelUrl() + ">;rel=\"profile\"";
+    }
 }

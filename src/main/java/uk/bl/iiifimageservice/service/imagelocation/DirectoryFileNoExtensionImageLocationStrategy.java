@@ -1,4 +1,4 @@
-package uk.bl.iiifimageservice.service.filelocation;
+package uk.bl.iiifimageservice.service.imagelocation;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -13,8 +13,8 @@ import org.springframework.stereotype.Service;
  * @author pblake
  * 
  */
-@Service(value = "DirectoryFileNoExtensionFileLocationStrategy")
-public class DirectoryFileNoExtensionFileLocationStrategy extends AbstractFileLocationStrategy {
+@Service(value = "DirectoryFileNoExtensionImageLocationStrategy")
+public class DirectoryFileNoExtensionImageLocationStrategy extends AbstractImageLocationStrategy {
 
     @Override
     public Path getImagePath(String identifier) {

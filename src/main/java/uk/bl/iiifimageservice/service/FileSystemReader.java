@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import uk.bl.iiifimageservice.service.filelocation.FileLocationStrategy;
+import uk.bl.iiifimageservice.service.imagelocation.ImageLocationStrategy;
 
 /**
  * Interacts with file system. Checks for existence of files.
@@ -20,11 +20,11 @@ import uk.bl.iiifimageservice.service.filelocation.FileLocationStrategy;
 public class FileSystemReader {
 
     @Autowired
-    @Qualifier("fileLocationStrategyName")
-    private FileLocationStrategy fileLocationStrategy;
+    @Qualifier("imageLocationStrategyName")
+    private ImageLocationStrategy imageLocationStrategy;
 
     public Path getImagePathFromIdentifier(String identifier) {
-        return fileLocationStrategy.getImagePath(identifier);
+        return imageLocationStrategy.getImagePath(identifier);
     }
 
     public boolean imageFileExists(String identifier) {
@@ -33,7 +33,7 @@ public class FileSystemReader {
     }
 
     public Path getLogFileFromIdentifier(String identifier) {
-        return fileLocationStrategy.getLogPath(identifier);
+        return imageLocationStrategy.getLogPath(identifier);
     }
 
     public boolean logFileExists(String identifier) {
@@ -42,7 +42,7 @@ public class FileSystemReader {
     }
 
     public Path getOutputFilename(String identifier) {
-        return fileLocationStrategy.getExtractedImagePath(identifier);
+        return imageLocationStrategy.getExtractedImagePath(identifier);
     }
 
     public String readFile(Path path) {

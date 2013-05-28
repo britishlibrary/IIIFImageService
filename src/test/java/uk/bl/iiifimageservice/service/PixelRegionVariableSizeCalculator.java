@@ -6,15 +6,23 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import uk.bl.iiifimageservice.domain.ImageMetadata;
 import uk.bl.iiifimageservice.domain.RequestData;
 import uk.bl.iiifimageservice.util.ImageMetadataGenerator;
 import uk.bl.iiifimageservice.util.RequestDataGenerator;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration("classpath:applicationContext-test.xml")
 public class PixelRegionVariableSizeCalculator {
 
-    private RegionSizeCalculator regionSizeCalculator = new RegionSizeCalculator();
+    @Autowired
+    private RegionSizeCalculator regionSizeCalculator;
+
     private ImageMetadata imageMetadata = ImageMetadataGenerator.getTestImageMetadata();
 
     @Test

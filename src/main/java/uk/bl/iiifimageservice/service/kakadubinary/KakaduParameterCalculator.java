@@ -199,7 +199,7 @@ public class KakaduParameterCalculator {
 
         if (!requestData.isRegionFull()) {
             if (requestData.isRegionPercentage()) {
-                requestedRegion = regionSizeCalculator.splitRegion(requestData);
+                requestedRegion = regionSizeCalculator.getRegion(requestData);
                 startX = new BigDecimal(requestedRegion.x).movePointLeft(2);
                 startY = new BigDecimal(requestedRegion.y).movePointLeft(2);
                 tileWidth = new BigDecimal(requestedRegion.width).movePointLeft(2);

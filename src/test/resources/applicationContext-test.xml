@@ -10,7 +10,7 @@
 
 	<context:component-scan base-package="uk.bl.iiifimageservice" />
     
-    <context:property-placeholder location="classpath:config.properties, file:${user.home}/config.properties, classpath:messages.properties" ignore-resource-not-found="true"/>
+    <context:property-placeholder location="classpath:config.properties, file:${user.home}/config.properties" ignore-resource-not-found="true"/>
 
     <alias name="${image.location.strategy}" alias="imageLocationStrategyName"/>
     
@@ -38,5 +38,5 @@
 		id="messageSource">
 		<property name="basename" value="messages" />
 	</bean>    
-    	
+    
 </beans>

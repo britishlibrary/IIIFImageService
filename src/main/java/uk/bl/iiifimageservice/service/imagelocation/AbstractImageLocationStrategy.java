@@ -1,11 +1,11 @@
-package uk.bl.iiifimageservice.service.filelocation;
+package uk.bl.iiifimageservice.service.imagelocation;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.springframework.beans.factory.annotation.Value;
 
-public abstract class AbstractFileLocationStrategy implements FileLocationStrategy {
+public abstract class AbstractImageLocationStrategy implements ImageLocationStrategy {
 
     @Value("${image.root.path}")
     protected String imageRootPath;

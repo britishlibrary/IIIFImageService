@@ -9,19 +9,22 @@ import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import uk.bl.iiifimageservice.domain.ImageError.ParameterName;
+import uk.bl.iiifimageservice.domain.ImageFormat;
 import uk.bl.iiifimageservice.domain.ImageMetadata;
 import uk.bl.iiifimageservice.domain.RequestData;
 import uk.bl.iiifimageservice.service.FileSystemReader;
 import uk.bl.iiifimageservice.service.ImageManipulator;
 import uk.bl.iiifimageservice.service.ImageService;
 import uk.bl.iiifimageservice.service.LogFileExtractor;
+import uk.bl.iiifimageservice.util.ImageServiceException;
 
 /**
  * Implementation of the ImageService interface using the kdu_expand binary.
@@ -33,6 +36,8 @@ import uk.bl.iiifimageservice.service.LogFileExtractor;
 public class KakaduBinaryExtractor implements ImageService {
 
     private static final Logger log = LoggerFactory.getLogger(KakaduBinaryExtractor.class);
+    private final static String COMPLIANCE_LEVEL_URL = "http://library.stanford.edu/iiif/image-api/compliance.html#level";
+    private final static String MISSING_IMAGE_MESSAGE = "image does not exist";
 
     @Value("${kakadu.binary.path}")
     private String kakaduBinaryPath;
@@ -53,6 +58,9 @@ public class KakaduBinaryExtractor implements ImageService {
     public byte[] extractImage(RequestData requestData) throws InterruptedException, IOException {
 
         ImageMetadata jp2ImageMetadata = extractImageMetadata(requestData.getIdentifier());
+        if (null == jp2ImageMetadata) {
+            throw new ImageServiceException(MISSING_IMAGE_MESSAGE, 404, ParameterName.IDENTIFIER);
+        }
 
         log.debug("Calling kdu_expand to extract image using [" + requestData + "]");
 
@@ -72,9 +80,14 @@ public class KakaduBinaryExtractor implements ImageService {
 
         BufferedImage manipulatedImage = imageManipulator.resizeImage(bmpInputImage, requestData, jp2ImageMetadata);
 
+        String outputFormat = requestData.getFormat();
+        if (outputFormat.toUpperCase().equals(ImageFormat.JP2.name())) {
+            outputFormat = "JPEG2000";
+        }
+
         // now write bmp in-memory image to output stream in requested format
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ImageIO.write(manipulatedImage, requestData.getFormat(), byteArrayOutputStream);
+        ImageIO.write(manipulatedImage, outputFormat, byteArrayOutputStream);
 
         return byteArrayOutputStream.toByteArray();
     }
@@ -89,7 +102,7 @@ public class KakaduBinaryExtractor implements ImageService {
         }
 
         if (!fileSystemReader.imageFileExists(identifier)) {
-            return null;
+            throw new ImageServiceException(MISSING_IMAGE_MESSAGE, 404, ParameterName.IDENTIFIER);
         }
 
         if (!fileSystemReader.logFileExists(identifier)) {
@@ -126,13 +139,14 @@ public class KakaduBinaryExtractor implements ImageService {
 
         log.debug("identifier [" + identifier + "] produces log file [" + logFile + "]");
 
-        return logFileExtractor.extractImageMetadata(identifier, logFile);
+        return logFileExtractor.extractImageMetadata(identifier, logFile, getComplianceLevelUrl());
     }
 
     private String[] buildExtractImageCommandString(RequestData requestData, ImageMetadata imageMetadata, Path bmpPath) {
 
         int reduce = kakaduParameterCalculator.calculateReduceParameter(imageMetadata, requestData);
-        String regionCommandValue = kakaduParameterCalculator.calculateRegionExtractionParameter(imageMetadata, requestData);
+        String regionCommandValue = kakaduParameterCalculator.calculateRegionExtractionParameter(imageMetadata,
+                requestData);
 
         String jp2ImageFilename = fileSystemReader.getImagePathFromIdentifier(requestData.getIdentifier()).toString();
 
@@ -150,4 +164,10 @@ public class KakaduBinaryExtractor implements ImageService {
         return commandParameters;
 
     }
+
+    @Override
+    public String getComplianceLevelUrl() {
+        return COMPLIANCE_LEVEL_URL + 2;
+    }
+
 }

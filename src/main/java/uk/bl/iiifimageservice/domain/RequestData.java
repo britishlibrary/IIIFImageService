@@ -2,20 +2,27 @@ package uk.bl.iiifimageservice.domain;
 
 import java.math.BigDecimal;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
 public class RequestData {
 
     public static final String FULL_LITERAL = "full";
     public static final String PERCENTAGE_LITERAL = "pct:";
     public static final String REQUEST_DELIMITER = ",";
 
+    @NotEmpty
     private String identifier;
 
+    @NotEmpty
     private String region;
 
+    @NotEmpty
     private String size;
 
+    @NotEmpty
     private Integer rotation;
 
+    @NotEmpty
     private String quality;
 
     private String format;

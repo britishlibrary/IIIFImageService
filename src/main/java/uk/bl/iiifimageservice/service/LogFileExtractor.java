@@ -28,13 +28,12 @@ public class LogFileExtractor {
     private final static Pattern sizePattern = Pattern.compile("Ssize=\\{(\\d+),(\\d+)\\}");
     private final static Pattern tilesPattern = Pattern.compile("Stiles=\\{(\\d+),(\\d+)\\}");
     private final static Pattern levelsPattern = Pattern.compile("Clevels=(\\d+)");
-    private final static String COMPLIANCE_LEVEL = "http://library.stanford.edu/iiif/image-api/compliance.html#level2";
     private static final Logger log = LoggerFactory.getLogger(LogFileExtractor.class);
 
     @Autowired
     private TextDisplayHelper textDisplayHelper;
 
-    public ImageMetadata extractImageMetadata(String identifier, String logFile) {
+    public ImageMetadata extractImageMetadata(String identifier, String logFile, String complianceLevel) {
 
         ImageMetadata imageMetadata = new ImageMetadata();
         imageMetadata.setIdentifier(identifier);
@@ -61,7 +60,7 @@ public class LogFileExtractor {
         imageMetadata.setQualities(textDisplayHelper.getDisplayValuesFrom(ImageQuality.values()));
 
         // compliance level is hard-wired too
-        imageMetadata.setProfile(COMPLIANCE_LEVEL);
+        imageMetadata.setProfile(complianceLevel);
 
         log.debug("Scraped from log file [" + imageMetadata + "]");
         return imageMetadata;

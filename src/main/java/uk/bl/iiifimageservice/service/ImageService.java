@@ -11,4 +11,6 @@ public interface ImageService {
 
     public byte[] extractImage(RequestData requestData) throws InterruptedException, IOException;
 
+    public String getComplianceLevelUrl();
+
 }
