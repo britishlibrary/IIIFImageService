@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import uk.bl.iiifimageservice.domain.ImageMetadata;
 import uk.bl.iiifimageservice.domain.ImageQuality;
 import uk.bl.iiifimageservice.domain.RequestData;
-import uk.bl.iiifimageservice.service.kakadubinary.KakaduBinaryExtractor;
+import uk.bl.iiifimageservice.service.kakaduextractor.SimpleKakaduExtractor;
 
 /**
  * Once the requested region has been extracted from Kakadu the image is resized, rotated etc here.
@@ -26,7 +26,7 @@ import uk.bl.iiifimageservice.service.kakadubinary.KakaduBinaryExtractor;
 @Service
 public class ImageManipulator {
 
-    private static final Logger log = LoggerFactory.getLogger(KakaduBinaryExtractor.class);
+    private static final Logger log = LoggerFactory.getLogger(SimpleKakaduExtractor.class);
 
     @Autowired
     private RegionSizeCalculator regionSizeCalculator;

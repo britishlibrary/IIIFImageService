@@ -28,8 +28,8 @@ public abstract class AbstractImageLocationStrategy implements ImageLocationStra
     }
 
     @Override
-    public Path getExtractedImagePath(String identifier) {
-        return getWritePath(identifier, ".bmp");
+    public Path getExtractedImagePath(String identifier, String extension) {
+        return getWritePath(identifier, extension);
     }
 
     protected Path getWritePath(String identifier, String extension) {

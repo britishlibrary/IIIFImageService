@@ -10,9 +10,19 @@
 
 	<context:component-scan base-package="uk.bl.iiifimageservice" />
     
-    <context:property-placeholder location="classpath:config.properties, file:${user.home}/config.properties, classpath:messages.properties" ignore-resource-not-found="true"/>
-
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">  
+	  <property name="ignoreResourceNotFound" value="true"/>
+	  <property name="locations">
+		<list>
+			<value>classpath:SanddragonImageService.properties</value>
+			<value>file:${user.home}#{servletContext.contextPath}.properties</value>
+			<value>classpath:messages.properties</value>
+		</list>
+	  </property>
+	</bean> 	
+	
     <alias name="${image.location.strategy}" alias="imageLocationStrategyName"/>
+    <alias name="${kakadu.extractor.strategy}" alias="kakaduExtractorStrategyName"/>
     
 	<mvc:annotation-driven/>
 
@@ -39,4 +49,5 @@
 		<property name="basename" value="messages" />
 	</bean>    
     	
+<!-- 	<bean class="uk.bl.iiifimageservice.controller.EncodingPostProcessor"/> -->
 </beans>

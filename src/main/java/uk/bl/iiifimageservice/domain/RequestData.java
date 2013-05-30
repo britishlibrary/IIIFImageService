@@ -162,6 +162,10 @@ public class RequestData {
         return rotation == 90 || rotation == 270;
     }
 
+    public boolean isFormatJpg() {
+        return format.equalsIgnoreCase("jpg");
+    }
+
     @Override
     public String toString() {
         return "RequestData [identifier=" + identifier + ", region(x,y,w,h)=" + region + ", size(w,h)=" + size

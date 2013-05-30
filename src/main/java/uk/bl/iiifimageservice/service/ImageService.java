@@ -7,7 +7,7 @@ import uk.bl.iiifimageservice.domain.RequestData;
 
 public interface ImageService {
 
-    public ImageMetadata extractImageMetadata(String identifier);
+    public ImageMetadata extractImageMetadata(String identifier) throws IOException, InterruptedException;
 
     public byte[] extractImage(RequestData requestData) throws InterruptedException, IOException;
 

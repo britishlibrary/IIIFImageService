@@ -1,4 +1,4 @@
-package uk.bl.iiifimageservice.service.kakadubinary;
+package uk.bl.iiifimageservice.service.kakaduextractor;
 
 import java.awt.Dimension;
 import java.awt.Rectangle;

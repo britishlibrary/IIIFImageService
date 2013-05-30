@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import uk.bl.iiifimageservice.service.imagelocation.ImageLocationStrategy;
 
 /**
- * Interacts with file system. Checks for existence of files.
+ * Interacts with file system. Checks for existence of and reads files.
  * 
  * @author pblake
  * 
@@ -42,7 +42,11 @@ public class FileSystemReader {
     }
 
     public Path getOutputFilename(String identifier) {
-        return imageLocationStrategy.getExtractedImagePath(identifier);
+        return imageLocationStrategy.getExtractedImagePath(identifier, ".bmp");
+    }
+
+    public Path getOutputFilename(String identifier, String extension) {
+        return imageLocationStrategy.getExtractedImagePath(identifier, extension);
     }
 
     public String readFile(Path path) {

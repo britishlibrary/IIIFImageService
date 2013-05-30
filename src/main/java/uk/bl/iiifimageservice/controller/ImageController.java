@@ -1,16 +1,20 @@
 package uk.bl.iiifimageservice.controller;
 
-import java.io.IOException;
 import java.io.StringWriter;
 import java.util.concurrent.Callable;
 
+import javax.annotation.PostConstruct;
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -51,7 +55,8 @@ public class ImageController {
     private static final Logger log = LoggerFactory.getLogger(ImageController.class);
 
     @Autowired
-    private ImageService imageService;
+    @Qualifier("kakaduExtractorStrategyName")
+    protected ImageService imageService;
 
     @Autowired
     private RequestValidator requestValidator;
@@ -64,8 +69,10 @@ public class ImageController {
 
     @RequestMapping(value = "/{identifier}/info", method = RequestMethod.GET)
     public @ResponseBody
-    Callable<ImageMetadata> getImageMetadata(@PathVariable final String identifier, HttpServletResponse response) {
+    Callable<ImageMetadata> getImageMetadata(final @PathVariable String identifier, HttpServletRequest request,
+            HttpServletResponse response) {
 
+        validateRequestUri(request.getRequestURI());
         log.info("Extracting metadata for image file with identifier [" + identifier + "]");
         addLinkHeader(response);
 
@@ -79,8 +86,10 @@ public class ImageController {
 
     @RequestMapping(value = "/{identifier}/{region}/{size}/{rotation}/{quality}.{format}", method = RequestMethod.GET)
     public @ResponseBody
-    Callable<byte[]> getImage(final @Valid RequestData requestData, HttpServletResponse response) throws Exception {
+    Callable<byte[]> getImage(final @Valid RequestData requestData, HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
 
+        validateRequestUri(request.getRequestURI());
         log.info("requesting image for [" + requestData.toString() + "]");
         addLinkHeader(response);
 
@@ -91,6 +100,25 @@ public class ImageController {
             }
         };
     }
+
+    @PostConstruct
+    public void logInfo() {
+        // is jp2 configured?
+        log.info("Available write formats from ImageIO api [" + StringUtils.join(ImageIO.getWriterFormatNames(), ", ")
+                + "]");
+        log.info("user.home property [" + System.getProperty("user.home") + "]");
+
+    }
+
+    /*
+     * @RequestMapping(value = "/{identifier}/{region}/{size}/{rotation}/{quality}", method = RequestMethod.GET) public
+     * 
+     * @ResponseBody Callable<byte[]> getImageWithDefaultFormat(final @Valid RequestData requestData, HttpServletRequest
+     * request, HttpServletResponse response) throws Exception {
+     * 
+     * requestData.setFormat("jpg"); // response.setContentType(MediaType.IMAGE_JPEG_VALUE); return
+     * getImage(requestData, request, response); }
+     */
 
     /**
      * If there are any request parameter bind exceptions then extract the first and send the xml response.
@@ -108,8 +136,6 @@ public class ImageController {
 
         ImageError imageError = extractErrorFrom(bindException);
 
-        // response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-
         String errorAsXml = convertImageErrorToXml(imageError);
 
         return new ResponseEntity<String>(errorAsXml, createExceptionHeaders(), HttpStatus.BAD_REQUEST);
@@ -123,8 +149,6 @@ public class ImageController {
 
         ImageError imageError = extractErrorFrom(imageServiceException);
 
-        // response.setStatus(imageServiceException.getStatusCode());
-
         String errorAsXml = convertImageErrorToXml(imageError);
 
         return new ResponseEntity<String>(errorAsXml, createExceptionHeaders(),
@@ -132,13 +156,11 @@ public class ImageController {
 
     }
 
-    @ExceptionHandler({ IOException.class, InterruptedException.class })
+    @ExceptionHandler({ Exception.class })
     @ResponseBody
     public ResponseEntity<String> handleException(Exception exception, HttpServletResponse response) {
 
         ImageError imageError = extractErrorFrom(exception);
-
-        // response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
         String errorAsXml = convertImageErrorToXml(imageError);
 
@@ -198,5 +220,13 @@ public class ImageController {
 
     private String getLinkHeaderValue() {
         return "<" + imageService.getComplianceLevelUrl() + ">;rel=\"profile\"";
+    }
+
+    private void validateRequestUri(String requestUri) {
+
+        log.debug("request uri [" + requestUri + "]");
+        if (requestUri.length() > 1024) {
+            throw new ImageServiceException("maximum length of URI is 1024", 414, ParameterName.UNKNOWN);
+        }
     }
 }

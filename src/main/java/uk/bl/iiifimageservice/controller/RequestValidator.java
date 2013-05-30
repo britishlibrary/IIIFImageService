@@ -3,8 +3,6 @@ package uk.bl.iiifimageservice.controller;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -19,14 +17,12 @@ import uk.bl.iiifimageservice.util.RequestParser;
 @Component
 public class RequestValidator implements Validator {
 
-    private static final Logger log = LoggerFactory.getLogger(RequestValidator.class);
-
     @Autowired
     private RequestParser requestParser;
 
     @Override
-    public boolean supports(Class<?> clazz) {
-        return RequestData.class.isAssignableFrom(clazz);
+    public boolean supports(Class<?> type) {
+        return RequestData.class.isAssignableFrom(type);
     }
 
     @Override
@@ -36,6 +32,16 @@ public class RequestValidator implements Validator {
         validateRegion(requestData, errors);
         validateSize(requestData, errors);
         validateFormat(requestData);
+        validateRotation(requestData, errors);
+
+    }
+
+    private void validateRotation(RequestData requestData, Errors errors) {
+
+        int rotation = requestData.getRotation();
+        if (rotation != 0 && rotation != 90 && rotation != 180 && rotation != 270) {
+            errors.rejectValue("rotation", "rotation.invalid");
+        }
 
     }
 
@@ -106,14 +112,15 @@ public class RequestValidator implements Validator {
 
     private void validateFormat(RequestData requestData) {
 
+        if (null == requestData.getFormat()) {
+            return;
+        }
+
         try {
             ImageFormat.valueOf(requestData.getFormat().toUpperCase());
         } catch (IllegalArgumentException iae) {
             throw new ImageServiceException("unknown format", 415, ParameterName.FORMAT);
         }
-
-        // check for jp2 support
-        log.debug("Available write formats from ImageIO " + StringUtils.join(ImageIO.getWriterFormatNames(), ", "));
 
         if (requestData.getFormat().equalsIgnoreCase(ImageFormat.JP2.name())
                 && !StringUtils.join(ImageIO.getWriterFormatNames()).contains("JPEG2000")) {

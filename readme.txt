@@ -17,13 +17,18 @@ This project was developed using the Kakadu Software kdu_expand.exe component an
 2. Drop the SanddragonImageService.war file into the webapps directory in your Tomcat install location. 
 3. Download the Kakadu demo from the Kakadu Software website - http://www.kakadusoftware.com/executables/KDU72_Demo_Apps_for_Win32_130117.msi
 4. Install the Kakadu demo and ensure that it works by using a command prompt to navigate to the installation folder and running kdu_expand.exe
-5. A properties file is embedded in the war file. To override this drop a copy in your user directory e.g. for Windows 7 this is c:\Users\[login]
-6. Update your config.properties kakadu.binary.path property to point to the location of the Kakadu installation, if needed. 
+5. A SanddragonImageService.properties file is embedded in the war file. To override this drop a copy in your user directory e.g. for Windows 7 this is c:\Users\[loginName]
+6. Update your SanddragonImageService.properties kakadu.binary.path property to point to the location of the Kakadu installation, if needed. 
 		The default is C:\Program Files (x86)\Kakadu\kdu_expand.exe
-7. Update your config.properties image.root.path property to point to the location of your JP2 files. The default is C:\JP2Cache
-8. Create a temporary directory at the location in the config.properties. The default is c:\temp.
+7. Update your SanddragonImageService.properties image.root.path property to point to the location of your JP2 files. The default is C:\JP2Cache
+8. Create a temporary directory at the location in the SanddragonImageService.properties. The default is c:\temp.
 9. There are currently two strategies for resolving the image location. When using the SimpleImageLocationStrategy the jp2 file would be located at c:\JP2Cache\imagefilename.jp2. 
 		When using the DirectoryFileNoExtensionImageLocationStrategy the jp2 file would be located at c:\JP2Cache\imagefilename\imagefilename   
+10. The conversion of jpg images from the output of Kadadu is configurable. It is set via a property in SanddragonImageService.properties called kakadu.extractor.strategy. The valid values are -
+	a. SimpleKakaduExtractor - uses just the Kakadu binary
+	b. SequentialKakaduExtractor - uses the Kakadu binary to extract .bmp and then cjpeg then converts this to .jpg
+	c. PipedKakaduExtractor - pipes output from Kakadu direct to cjpeg (unix only)
+	d. IntegratedKakaduExtractor - for use where cjpeg is embedded in Kakadu binary (unix only)
 
 //
 // Example Usage

@@ -19,6 +19,6 @@ public interface ImageLocationStrategy {
 
     public Path getLogPath(String identifier);
 
-    public Path getExtractedImagePath(String identifier);
+    public Path getExtractedImagePath(String identifier, String extension);
 
 }
