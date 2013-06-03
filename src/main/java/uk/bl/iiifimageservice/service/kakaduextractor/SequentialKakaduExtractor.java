@@ -14,10 +14,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import uk.bl.iiifimageservice.domain.ImageError.ParameterName;
 import uk.bl.iiifimageservice.domain.ImageFormat;
 import uk.bl.iiifimageservice.domain.ImageMetadata;
 import uk.bl.iiifimageservice.domain.RequestData;
 import uk.bl.iiifimageservice.service.AbstractImageService;
+import uk.bl.iiifimageservice.util.ImageServiceException;
 
 /**
  * If the image requested is a jpg then extract using Kakadu and then convert bmp to jpg using cjpeg
@@ -32,6 +34,9 @@ public class SequentialKakaduExtractor extends AbstractImageService {
 
     @Value("${cjpeg.binary.path}")
     protected String cjpegBinaryPath;
+
+    @Value("${cjpeg.quality}")
+    protected String cjpegQuality;
 
     @Override
     public byte[] extractImage(RequestData requestData) throws InterruptedException, IOException {
@@ -68,12 +73,20 @@ public class SequentialKakaduExtractor extends AbstractImageService {
     private String[] buildConvertBmpCommandString(RequestData requestData, ImageMetadata imageMetadata, Path inputPath,
             Path outputPath) {
 
-        String[] commandParameters = new String[] { cjpegBinaryPath, "-outfile", outputPath.toString(),
-                inputPath.toString() };
+        String cjpegQualitySwitch = "-quality";
 
-        log.debug("Convert bmp to jpg using cjpeg shell command [" + StringUtils.join(commandParameters, " ") + "]");
+        try {
+            Integer.valueOf(cjpegQuality);
+        } catch (NumberFormatException nfe) {
+            throw new ImageServiceException("cjpeg quality value must be an integer", 500, ParameterName.UNKNOWN);
+        }
 
-        return commandParameters;
+        String[] command = new String[] { cjpegBinaryPath, cjpegQualitySwitch, cjpegQuality, "-outfile",
+                outputPath.toString(), inputPath.toString() };
+
+        log.debug("Convert bmp to jpg using cjpeg shell command [" + StringUtils.join(command, " ") + "]");
+
+        return command;
 
     }
 

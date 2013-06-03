@@ -14,10 +14,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import uk.bl.iiifimageservice.domain.ImageError.ParameterName;
 import uk.bl.iiifimageservice.domain.ImageFormat;
 import uk.bl.iiifimageservice.domain.ImageMetadata;
 import uk.bl.iiifimageservice.domain.RequestData;
 import uk.bl.iiifimageservice.service.AbstractImageService;
+import uk.bl.iiifimageservice.util.ImageServiceException;
 
 /**
  * If the image requested is a jpg then extract using Kakadu and pipe bmp to cjpeg to convert to jpg
@@ -32,6 +34,9 @@ public class PipedKakaduExtractor extends AbstractImageService {
 
     @Value("${piped.shell.path}")
     protected String pipedShellPath;
+
+    @Value("${cjpeg.quality}")
+    protected String cjpegQuality;
 
     @Override
     public byte[] extractImage(RequestData requestData) throws InterruptedException, IOException {
@@ -67,8 +72,14 @@ public class PipedKakaduExtractor extends AbstractImageService {
 
         String jp2ImageFilename = fileSystemReader.getImagePathFromIdentifier(requestData.getIdentifier()).toString();
 
-        String[] command = new String[] { pipedShellPath, jp2ImageFilename, jpgPath.toString(), "-resilient", "-quiet",
-                "-reduce", String.valueOf(reduce) };
+        try {
+            Integer.valueOf(cjpegQuality);
+        } catch (NumberFormatException nfe) {
+            throw new ImageServiceException("cjpeg quality value must be an integer", 500, ParameterName.UNKNOWN);
+        }
+
+        String[] command = new String[] { pipedShellPath, jp2ImageFilename, jpgPath.toString(), cjpegQuality,
+                "-resilient", "-quiet", "-reduce", String.valueOf(reduce) };
 
         command = addRegionCommand(imageMetadata, requestData, command);
 
