@@ -45,7 +45,7 @@ public abstract class AbstractImageService implements ImageService {
     protected ImageManipulator imageManipulator;
 
     @Override
-    public ImageMetadata extractImageMetadata(String identifier) throws IOException, InterruptedException {
+    public final ImageMetadata extractImageMetadata(String identifier) throws IOException, InterruptedException {
 
         log.debug("Extracting metadata for jp2 file with identifier [" + identifier + "]");
 
@@ -103,7 +103,7 @@ public abstract class AbstractImageService implements ImageService {
     }
 
     @Override
-    public String getComplianceLevelUrl() {
+    public final String getComplianceLevelUrl() {
         return COMPLIANCE_LEVEL_URL + 2;
     }
 

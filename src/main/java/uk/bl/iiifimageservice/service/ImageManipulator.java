@@ -36,7 +36,7 @@ public class ImageManipulator {
 
         Dimension requestedSize = regionSizeCalculator.getSizeForImageManipulation(jp2ImageMetadata, requestData);
         requestedSize = regionSizeCalculator.resizeForRotation(requestData, requestedSize);
-        log.debug("image size (possibly calculated) [" + requestedSize + "]");
+        log.debug("image size (possibly calculated) [" + requestedSize.toString() + "]");
 
         BufferedImage resizedImage = new BufferedImage(requestedSize.width, requestedSize.height, getImageType(
                 requestData, extractedImage));

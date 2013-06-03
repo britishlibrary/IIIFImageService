@@ -53,13 +53,10 @@ public class LogFileExtractor {
         // scale_factors is value of Clevels from log file
         imageMetadata.setScaleFactors(extractScaleFactors(logFile));
 
-        // formats is hard-wired to jpg, png, gif in C# implementation
         imageMetadata.setFormats(textDisplayHelper.getDisplayValuesFrom(ImageFormat.values()));
 
-        // qualities is hard-wired to native, grey, bitonal
         imageMetadata.setQualities(textDisplayHelper.getDisplayValuesFrom(ImageQuality.values()));
 
-        // compliance level is hard-wired too
         imageMetadata.setProfile(complianceLevel);
 
         log.debug("Scraped from log file [" + imageMetadata + "]");
@@ -71,12 +68,12 @@ public class LogFileExtractor {
         Integer levels = null;
         Matcher levelsMatcher = levelsPattern.matcher(logFile);
         if (levelsMatcher.find()) {
-            levels = Integer.valueOf(levelsMatcher.group(1));
+            levels = Integer.valueOf(levelsMatcher.group(1)) - 1;
         }
 
         List<Integer> scaleFactors = new ArrayList<>();
         for (int i = 0; i < levels; i++) {
-            scaleFactors.add((int) Math.pow(i, 2));
+            scaleFactors.add((int) Math.pow(2, i));
 
         }
 

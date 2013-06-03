@@ -38,8 +38,8 @@ public class RequestValidator implements Validator {
 
     private void validateRotation(RequestData requestData, Errors errors) {
 
-        int rotation = requestData.getRotation();
-        if (rotation != 0 && rotation != 90 && rotation != 180 && rotation != 270) {
+        Integer rotation = requestData.getRotation();
+        if (rotation == null || (rotation != 0 && rotation != 90 && rotation != 180 && rotation != 270)) {
             errors.rejectValue("rotation", "rotation.invalid");
         }
 

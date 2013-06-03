@@ -189,11 +189,20 @@ public class ImageController {
 
     private ImageError extractErrorFrom(Exception exception) {
 
-        return new ImageError(ParameterName.UNKNOWN, exception.getMessage());
+        String message = exception.getMessage();
+        if (StringUtils.isEmpty(message)) {
+            message = exception.getClass().getName();
+        }
+        return new ImageError(ParameterName.UNKNOWN, message);
 
     }
 
     private String convertImageErrorToXml(ImageError imageError) {
+
+        if (StringUtils.isEmpty(imageError.getMessage())) {
+            imageError.setMessage("unknown error");
+        }
+
         // ugly - see Spring Jira SPR-9878
         StringWriter writer = new StringWriter();
         StreamResult result = new StreamResult(writer);

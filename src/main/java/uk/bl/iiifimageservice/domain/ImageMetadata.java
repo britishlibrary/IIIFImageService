@@ -7,6 +7,8 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+
 /**
  * The JP2 image metadata
  * 
@@ -64,6 +66,7 @@ public class ImageMetadata {
     }
 
     @XmlElement(name = "tile_width")
+    @JsonProperty("tile_width")
     public int getTileWidth() {
         return tileWidth;
     }
@@ -73,6 +76,7 @@ public class ImageMetadata {
     }
 
     @XmlElement(name = "tile_height")
+    @JsonProperty("tile_height")
     public int getTileHeight() {
         return tileHeight;
     }
@@ -83,6 +87,7 @@ public class ImageMetadata {
 
     @XmlElementWrapper(name = "scale_factors")
     @XmlElement(name = "scale_factor")
+    @JsonProperty("scale_factors")
     public List<Integer> getScaleFactors() {
         return scaleFactors;
     }

@@ -25,6 +25,10 @@
     <alias name="${kakadu.extractor.strategy}" alias="kakaduExtractorStrategyName"/>
     
 	<mvc:annotation-driven/>
+	
+	<mvc:interceptors>
+	    <bean class="uk.bl.iiifimageservice.controller.LoggingRequestInterceptor" /> 
+	</mvc:interceptors>
 
     <bean id="xmlMarshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
         <property name="classesToBeBound">
