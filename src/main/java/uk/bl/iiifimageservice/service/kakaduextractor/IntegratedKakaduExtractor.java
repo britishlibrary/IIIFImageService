@@ -50,7 +50,7 @@ public class IntegratedKakaduExtractor extends AbstractImageService {
         BufferedImage jpgInputImage = ImageIO.read(jpgFile.toFile());
         Files.delete(jpgFile);
 
-        BufferedImage manipulatedImage = imageManipulator.resizeImage(jpgInputImage, requestData, jp2ImageMetadata);
+        BufferedImage manipulatedImage = imageManipulator.changeImage(jpgInputImage, requestData, jp2ImageMetadata);
 
         try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
             ImageIO.write(manipulatedImage, ImageFormat.JPG.name(), byteArrayOutputStream);

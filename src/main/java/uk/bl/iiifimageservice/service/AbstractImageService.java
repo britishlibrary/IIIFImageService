@@ -77,17 +77,18 @@ public abstract class AbstractImageService implements ImageService {
 
         ImageMetadata jp2ImageMetadata = extractImageMetadata(requestData.getIdentifier());
 
-        Path bmpFile = fileSystemReader.getOutputFilename(requestData.getIdentifier());
+        Path bmpFile = fileSystemReader.getOutputFilename();
 
         // create .bmp file
         callShellCommand(buildExtractImageCommandString(kakaduBinaryPath, requestData, jp2ImageMetadata, bmpFile));
 
         log.debug("Reading in extracted file from [" + bmpFile.toString() + "]");
-        BufferedImage bmpInputImage = ImageIO.read(bmpFile.toFile());
+        BufferedImage bmpInputImage = null;
 
+        bmpInputImage = ImageIO.read(bmpFile.toFile());
         Files.delete(bmpFile);
 
-        BufferedImage manipulatedImage = imageManipulator.resizeImage(bmpInputImage, requestData, jp2ImageMetadata);
+        BufferedImage manipulatedImage = imageManipulator.changeImage(bmpInputImage, requestData, jp2ImageMetadata);
 
         String outputFormat = requestData.getFormat();
         if (outputFormat.toUpperCase().equals(ImageFormat.JP2.name())) {

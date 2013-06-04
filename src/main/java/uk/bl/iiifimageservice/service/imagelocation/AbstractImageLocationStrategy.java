@@ -16,9 +16,6 @@ public abstract class AbstractImageLocationStrategy implements ImageLocationStra
     @Value("${log.file.extension}")
     protected String logFileExtension;
 
-    @Value("${temporary.file.path}")
-    protected String temporaryFilePath;
-
     @Override
     public abstract Path getImagePath(String identifier);
 
@@ -33,7 +30,7 @@ public abstract class AbstractImageLocationStrategy implements ImageLocationStra
     }
 
     protected Path getWritePath(String identifier, String extension) {
-        return Paths.get(temporaryFilePath, identifier + extension);
+        return Paths.get(System.getProperty("java.io.tmpdir"), identifier + extension);
     }
 
 }

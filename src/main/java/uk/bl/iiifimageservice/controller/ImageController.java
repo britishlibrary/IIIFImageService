@@ -102,23 +102,14 @@ public class ImageController {
     }
 
     @PostConstruct
-    public void logInfo() {
+    public void logStartupInfo() {
         // is jp2 configured?
         log.info("Available write formats from ImageIO api [" + StringUtils.join(ImageIO.getWriterFormatNames(), ", ")
                 + "]");
-        log.info("user.home property [" + System.getProperty("user.home") + "]");
+        log.info("user.home for properties file location [" + System.getProperty("user.home") + "]");
+        log.info("java.io.tmpdir temporary file location [" + System.getProperty("java.io.tmpdir") + "]");
 
     }
-
-    /*
-     * @RequestMapping(value = "/{identifier}/{region}/{size}/{rotation}/{quality}", method = RequestMethod.GET) public
-     * 
-     * @ResponseBody Callable<byte[]> getImageWithDefaultFormat(final @Valid RequestData requestData, HttpServletRequest
-     * request, HttpServletResponse response) throws Exception {
-     * 
-     * requestData.setFormat("jpg"); // response.setContentType(MediaType.IMAGE_JPEG_VALUE); return
-     * getImage(requestData, request, response); }
-     */
 
     /**
      * If there are any request parameter bind exceptions then extract the first and send the xml response.
@@ -130,12 +121,12 @@ public class ImageController {
      * @param response
      * @return
      */
-    @ExceptionHandler(BindException.class)
+    @ExceptionHandler
     @ResponseBody
     public ResponseEntity<String> handleException(BindException bindException, HttpServletResponse response) {
 
+        log.info("bindException occured [" + bindException.getMessage() + "]", bindException);
         ImageError imageError = extractErrorFrom(bindException);
-
         String errorAsXml = convertImageErrorToXml(imageError);
 
         return new ResponseEntity<String>(errorAsXml, createExceptionHeaders(), HttpStatus.BAD_REQUEST);
@@ -147,8 +138,8 @@ public class ImageController {
     public ResponseEntity<String> handleException(ImageServiceException imageServiceException,
             HttpServletResponse response) {
 
+        log.error("imageServiceException occured [" + imageServiceException.getMessage() + "]", imageServiceException);
         ImageError imageError = extractErrorFrom(imageServiceException);
-
         String errorAsXml = convertImageErrorToXml(imageError);
 
         return new ResponseEntity<String>(errorAsXml, createExceptionHeaders(),
@@ -156,12 +147,16 @@ public class ImageController {
 
     }
 
-    @ExceptionHandler({ Exception.class })
+    @ExceptionHandler(Exception.class)
     @ResponseBody
     public ResponseEntity<String> handleException(Exception exception, HttpServletResponse response) {
 
-        ImageError imageError = extractErrorFrom(exception);
+        if (!(exception.getCause() instanceof java.net.SocketException)) {
+            // skip client aborts
+            log.error("exception occured [" + exception.getMessage() + "]", exception);
+        }
 
+        ImageError imageError = extractErrorFrom(exception);
         String errorAsXml = convertImageErrorToXml(imageError);
 
         return new ResponseEntity<String>(errorAsXml, createExceptionHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);

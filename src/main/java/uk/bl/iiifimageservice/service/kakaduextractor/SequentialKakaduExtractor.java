@@ -49,7 +49,7 @@ public class SequentialKakaduExtractor extends AbstractImageService {
 
         ImageMetadata jp2ImageMetadata = extractImageMetadata(requestData.getIdentifier());
 
-        Path bmpFile = fileSystemReader.getOutputFilename(requestData.getIdentifier());
+        Path bmpFile = fileSystemReader.getOutputFilename();
         // create .bmp file
         callShellCommand(buildExtractImageCommandString(kakaduBinaryPath, requestData, jp2ImageMetadata, bmpFile));
 
@@ -61,7 +61,7 @@ public class SequentialKakaduExtractor extends AbstractImageService {
         BufferedImage jpgInputImage = ImageIO.read(jpgFile.toFile());
         Files.delete(jpgFile);
 
-        BufferedImage manipulatedImage = imageManipulator.resizeImage(jpgInputImage, requestData, jp2ImageMetadata);
+        BufferedImage manipulatedImage = imageManipulator.changeImage(jpgInputImage, requestData, jp2ImageMetadata);
 
         try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
             ImageIO.write(manipulatedImage, ImageFormat.JPG.name(), byteArrayOutputStream);

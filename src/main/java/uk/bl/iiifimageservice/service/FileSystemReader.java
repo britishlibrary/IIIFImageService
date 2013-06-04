@@ -3,7 +3,10 @@ package uk.bl.iiifimageservice.service;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -18,6 +21,8 @@ import uk.bl.iiifimageservice.service.imagelocation.ImageLocationStrategy;
  */
 @Service
 public class FileSystemReader {
+
+    private static final Logger log = LoggerFactory.getLogger(FileSystemReader.class);
 
     @Autowired
     @Qualifier("imageLocationStrategyName")
@@ -41,8 +46,10 @@ public class FileSystemReader {
         return Files.exists(path) && !Files.isDirectory(path);
     }
 
-    public Path getOutputFilename(String identifier) {
-        return imageLocationStrategy.getExtractedImagePath(identifier, ".bmp");
+    public Path getOutputFilename() {
+        Path outputFilename = imageLocationStrategy.getExtractedImagePath(UUID.randomUUID().toString(), ".bmp");
+        log.debug("UUID generated path [" + outputFilename.toString() + "]");
+        return outputFilename;
     }
 
     public Path getOutputFilename(String identifier, String extension) {

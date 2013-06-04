@@ -1,11 +1,10 @@
 package uk.bl.iiifimageservice.service;
 
-import java.awt.AlphaComposite;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,52 +30,54 @@ public class ImageManipulator {
     @Autowired
     private RegionSizeCalculator regionSizeCalculator;
 
-    public BufferedImage resizeImage(BufferedImage extractedImage, RequestData requestData,
+    public BufferedImage changeImage(BufferedImage extractedImage, RequestData requestData,
             ImageMetadata jp2ImageMetadata) {
 
         Dimension requestedSize = regionSizeCalculator.getSizeForImageManipulation(jp2ImageMetadata, requestData);
-        requestedSize = regionSizeCalculator.resizeForRotation(requestData, requestedSize);
-        log.debug("image size (possibly calculated) [" + requestedSize.toString() + "]");
+        log.debug("result image size [" + requestedSize.toString() + "]");
+
+        if (requestData.isARotation()) {
+            requestedSize = regionSizeCalculator.resizeForRotation(requestData, requestedSize);
+            log.debug("result image size for rotation [" + requestedSize.toString() + "]");
+            extractedImage = rotate(extractedImage, requestData);
+        }
 
         BufferedImage resizedImage = new BufferedImage(requestedSize.width, requestedSize.height, getImageType(
                 requestData, extractedImage));
         Graphics2D g = resizedImage.createGraphics();
-
-        g.setComposite(AlphaComposite.Src);
-        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-        if (requestData.isARotation()) {
-            rotateImage(extractedImage, g, requestData, requestedSize);
-            return resizedImage;
-        }
         g.drawImage(extractedImage, 0, 0, requestedSize.width, requestedSize.height, null);
-
         g.dispose();
 
         return resizedImage;
 
     }
 
-    private void rotateImage(BufferedImage extractedImage, Graphics2D g, RequestData requestData,
-            Dimension requestedSize) {
+    private BufferedImage rotate(BufferedImage image, RequestData requestData) {
 
-        log.debug("rotating image by [" + requestData.getRotation() + "] degrees");
+        int width = image.getWidth();
+        int height = image.getHeight();
 
-        double theta = Math.toRadians(requestData.getRotation());
-        AffineTransform transform = new AffineTransform();
+        int newWidth = image.getWidth();
+        int newHeight = image.getHeight();
 
-        if (requestData.getRotation() == 180) {
-            g.rotate(theta, 0.5 * requestedSize.getWidth(), 0.5 * requestedSize.getHeight());
-        } else {
-            transform.translate(0.5 * requestedSize.getWidth(), 0.5 * requestedSize.getHeight());
-            transform.rotate(theta);
-            transform.translate(-0.5 * requestedSize.getHeight(), -0.5 * requestedSize.getWidth());
+        if (requestData.getRotation() == 90 || requestData.getRotation() == 270) {
+            newWidth = image.getHeight();
+            newHeight = image.getWidth();
         }
-        g.drawImage(extractedImage, transform, null);
+
+        BufferedImage result = new BufferedImage(newWidth, newHeight, image.getType());
+
+        Graphics2D g = result.createGraphics();
+
+        BigDecimal two = new BigDecimal(2);
+        g.translate(new BigDecimal(newWidth - width).divide(two, RoundingMode.UP).intValue(), new BigDecimal(newHeight
+                - height).divide(two, RoundingMode.UP).intValue());
+        g.rotate(Math.toRadians(requestData.getRotation()), new BigDecimal(width).divide(two, RoundingMode.UP)
+                .intValue(), new BigDecimal(height).divide(two, RoundingMode.UP).intValue());
+        g.drawRenderedImage(image, null);
         g.dispose();
 
+        return result;
     }
 
     private int getImageType(RequestData requestData, BufferedImage extractedImage) {
