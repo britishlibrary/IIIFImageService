@@ -53,6 +53,7 @@ If you do not have any JPEG2000 images available example JPEG2000s can be downlo
 1. The application is a Maven-based application written using Java 7 and tested with Tomcat 7. 
 2. Build the war file in the usual Maven fashion - mvn package
 3. If you want to output jp2 images drop jai-imageio-core-standalone-1.2-pre-dr-b04-2013-04-23-sources.jar into the lib\ext directory of the Tomcat java install. For convenience, there will be a copy in the war file.
+4. If any X11 errors occur when running on a unix platform try setting the CATALINA_OPTS env variable to -Djava.awt.headless=true 
 
 //
 // Known Issues
