@@ -58,5 +58,4 @@ If you do not have any JPEG2000 images available example JPEG2000s can be downlo
 //
 // Known Issues
 //
-1. Omitting the format in the request results in an error
-2. Requests for invalid regions not handled
+1. Requests for invalid regions not handled

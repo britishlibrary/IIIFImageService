@@ -5,7 +5,7 @@
 	<groupId>uk.bl.iiifimageservice</groupId>
 	<artifactId>iiifimageservice</artifactId>
 	<packaging>war</packaging>
-	<version>1.0.0.RELEASE</version>
+	<version>1.0.1.RELEASE</version>
 	<name>IIIF Image Service</name>
 	<url>http://sanddragon.bl.uk/</url>
 

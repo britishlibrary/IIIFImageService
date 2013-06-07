@@ -48,6 +48,10 @@ public class RequestValidator implements Validator {
     private void validateSize(RequestData requestData, Errors errors) {
 
         String sizeValue = requestData.getSize();
+        if (StringUtils.isEmpty(sizeValue) || sizeValue.length() == 1) {
+            errors.rejectValue("size", "size.invalid.length");
+        }
+
         if (!sizeValue.startsWith(RequestData.PERCENTAGE_LITERAL) && !sizeValue.startsWith(RequestData.FULL_LITERAL)
                 && !sizeValue.substring(0, 1).matches("\\d") && !sizeValue.startsWith(",")
                 && !sizeValue.startsWith("!")) {
@@ -80,6 +84,7 @@ public class RequestValidator implements Validator {
 
         if (coords.length != 4) {
             errors.rejectValue("region", "region.missing");
+            return;
         }
 
         if (StringUtils.isEmpty(coords[0])) {
@@ -111,10 +116,6 @@ public class RequestValidator implements Validator {
     }
 
     private void validateFormat(RequestData requestData) {
-
-        if (null == requestData.getFormat()) {
-            return;
-        }
 
         try {
             ImageFormat.valueOf(requestData.getFormat().toUpperCase());

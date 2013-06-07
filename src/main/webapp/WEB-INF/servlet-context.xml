@@ -52,5 +52,7 @@
 		id="messageSource">
 		<property name="basename" value="messages" />
 	</bean>    
+	
+	<bean class="uk.bl.iiifimageservice.controller.ByteArrayPostProcessor" />
     	
 </beans>

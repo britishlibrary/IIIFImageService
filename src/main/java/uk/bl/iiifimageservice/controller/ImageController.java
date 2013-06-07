@@ -84,7 +84,8 @@ public class ImageController {
         };
     }
 
-    @RequestMapping(value = "/{identifier}/{region}/{size}/{rotation}/{quality}.{format}", method = RequestMethod.GET)
+    @RequestMapping(value = { "/{identifier}/{region}/{size}/{rotation}/{quality}.{format}",
+            "/{identifier}/{region}/{size}/{rotation}/{quality}" }, method = RequestMethod.GET)
     public @ResponseBody
     Callable<byte[]> getImage(final @Valid RequestData requestData, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -125,7 +126,7 @@ public class ImageController {
     @ResponseBody
     public ResponseEntity<String> handleException(BindException bindException, HttpServletResponse response) {
 
-        log.info("bindException occured [" + bindException.getMessage() + "]", bindException);
+        log.info("bindException occured [" + bindException.getMessage() + "]");
         ImageError imageError = extractErrorFrom(bindException);
         String errorAsXml = convertImageErrorToXml(imageError);
 

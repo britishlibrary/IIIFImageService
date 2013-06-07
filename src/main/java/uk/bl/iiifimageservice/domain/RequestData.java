@@ -25,7 +25,7 @@ public class RequestData {
     @NotEmpty
     private String quality;
 
-    private String format;
+    private String format = ImageFormat.JPG.toString().toLowerCase();
 
     public String getIdentifier() {
         return identifier;
