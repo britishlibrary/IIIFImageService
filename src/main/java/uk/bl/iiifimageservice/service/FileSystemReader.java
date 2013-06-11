@@ -5,10 +5,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
 
+import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import uk.bl.iiifimageservice.service.imagelocation.ImageLocationStrategy;
@@ -24,8 +24,7 @@ public class FileSystemReader {
 
     private static final Logger log = LoggerFactory.getLogger(FileSystemReader.class);
 
-    @Autowired
-    @Qualifier("imageLocationStrategyName")
+    @Resource(name = "imageLocationStrategyName")
     private ImageLocationStrategy imageLocationStrategy;
 
     public Path getImagePathFromIdentifier(String identifier) {
@@ -47,7 +46,8 @@ public class FileSystemReader {
     }
 
     public Path getOutputFilename() {
-        Path outputFilename = imageLocationStrategy.getExtractedImagePath(UUID.randomUUID().toString(), ".bmp");
+        Path outputFilename = imageLocationStrategy.getExtractedImagePath(UUID.randomUUID()
+                                                                              .toString(), ".bmp");
         log.debug("UUID generated path [" + outputFilename.toString() + "]");
         return outputFilename;
     }

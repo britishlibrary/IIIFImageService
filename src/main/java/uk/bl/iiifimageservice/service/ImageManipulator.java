@@ -6,9 +6,10 @@ import java.awt.image.BufferedImage;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import uk.bl.iiifimageservice.domain.ImageMetadata;
@@ -27,7 +28,7 @@ public class ImageManipulator {
 
     private static final Logger log = LoggerFactory.getLogger(SimpleKakaduExtractor.class);
 
-    @Autowired
+    @Resource
     private RegionSizeCalculator regionSizeCalculator;
 
     public BufferedImage changeImage(BufferedImage extractedImage, RequestData requestData,
@@ -70,10 +71,14 @@ public class ImageManipulator {
         Graphics2D g = result.createGraphics();
 
         BigDecimal two = new BigDecimal(2);
-        g.translate(new BigDecimal(newWidth - width).divide(two, RoundingMode.UP).intValue(), new BigDecimal(newHeight
-                - height).divide(two, RoundingMode.UP).intValue());
+        g.translate(new BigDecimal(newWidth - width).divide(two, RoundingMode.UP)
+                                                    .intValue(),
+                new BigDecimal(newHeight - height).divide(two, RoundingMode.UP)
+                                                  .intValue());
         g.rotate(Math.toRadians(requestData.getRotation()), new BigDecimal(width).divide(two, RoundingMode.UP)
-                .intValue(), new BigDecimal(height).divide(two, RoundingMode.UP).intValue());
+                                                                                 .intValue(),
+                new BigDecimal(height).divide(two, RoundingMode.UP)
+                                      .intValue());
         g.drawRenderedImage(image, null);
         g.dispose();
 
@@ -82,7 +87,8 @@ public class ImageManipulator {
 
     private int getImageType(RequestData requestData, BufferedImage extractedImage) {
 
-        ImageQuality imageQuality = ImageQuality.valueOf(requestData.getQuality().toUpperCase());
+        ImageQuality imageQuality = ImageQuality.valueOf(requestData.getQuality()
+                                                                    .toUpperCase());
         switch (imageQuality) {
 
         case COLOR:

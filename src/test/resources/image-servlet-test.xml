@@ -53,5 +53,5 @@
 	</bean>    
 	
 	<bean class="uk.bl.iiifimageservice.controller.ByteArrayPostProcessor" />
-    	
+
 </beans>

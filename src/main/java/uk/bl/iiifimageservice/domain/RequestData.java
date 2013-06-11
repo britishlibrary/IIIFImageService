@@ -2,7 +2,7 @@ package uk.bl.iiifimageservice.domain;
 
 import java.math.BigDecimal;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 public class RequestData {
 
@@ -10,22 +10,23 @@ public class RequestData {
     public static final String PERCENTAGE_LITERAL = "pct:";
     public static final String REQUEST_DELIMITER = ",";
 
-    @NotEmpty
+    @NotNull
     private String identifier;
 
-    @NotEmpty
+    @NotNull
     private String region;
 
-    @NotEmpty
+    @NotNull
     private String size;
 
-    @NotEmpty
+    @NotNull
     private Integer rotation;
 
-    @NotEmpty
+    @NotNull
     private String quality;
 
-    private String format = ImageFormat.JPG.toString().toLowerCase();
+    private String format = ImageFormat.JPG.toString()
+                                           .toLowerCase();
 
     public String getIdentifier() {
         return identifier;

@@ -6,9 +6,10 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 
+import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import uk.bl.iiifimageservice.domain.ImageMetadata;
@@ -26,7 +27,7 @@ public class KakaduParameterCalculator {
 
     private static final Logger log = LoggerFactory.getLogger(KakaduParameterCalculator.class);
 
-    @Autowired
+    @Resource
     private RegionSizeCalculator regionSizeCalculator;
 
     public int calculateReduceParameter(ImageMetadata imageMetadata, RequestData requestData) {
@@ -173,7 +174,9 @@ public class KakaduParameterCalculator {
         }
 
         // Convert.ToInt32(1 / scale);
-        int reduce = BigDecimal.ONE.divide(scale, precisonTen).setScale(0, RoundingMode.HALF_EVEN).intValue();
+        int reduce = BigDecimal.ONE.divide(scale, precisonTen)
+                                   .setScale(0, RoundingMode.HALF_EVEN)
+                                   .intValue();
         if (reduce > 0) {
             reduce = (int) Math.floor(logOfBase(2.5, reduce)); // Convert.ToInt32(Math.Floor(Math.Log(reduce, 2.5)));
         }

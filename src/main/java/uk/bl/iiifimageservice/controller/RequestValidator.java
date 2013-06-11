@@ -1,9 +1,9 @@
 package uk.bl.iiifimageservice.controller;
 
+import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -17,7 +17,7 @@ import uk.bl.iiifimageservice.util.RequestParser;
 @Component
 public class RequestValidator implements Validator {
 
-    @Autowired
+    @Resource
     private RequestParser requestParser;
 
     @Override
@@ -50,11 +50,12 @@ public class RequestValidator implements Validator {
         String sizeValue = requestData.getSize();
         if (StringUtils.isEmpty(sizeValue) || sizeValue.length() == 1) {
             errors.rejectValue("size", "size.invalid.length");
+            return;
         }
 
         if (!sizeValue.startsWith(RequestData.PERCENTAGE_LITERAL) && !sizeValue.startsWith(RequestData.FULL_LITERAL)
-                && !sizeValue.substring(0, 1).matches("\\d") && !sizeValue.startsWith(",")
-                && !sizeValue.startsWith("!")) {
+                && !sizeValue.substring(0, 1)
+                             .matches("\\d") && !sizeValue.startsWith(",") && !sizeValue.startsWith("!")) {
             errors.rejectValue("size", "size.invalid.start");
         }
 
@@ -64,7 +65,8 @@ public class RequestValidator implements Validator {
 
         String regionValue = requestData.getRegion();
 
-        if (!regionValue.startsWith(RequestData.PERCENTAGE_LITERAL) && !regionValue.substring(0, 1).matches("\\d")
+        if (!regionValue.startsWith(RequestData.PERCENTAGE_LITERAL) && !regionValue.substring(0, 1)
+                                                                                   .matches("\\d")
                 && !regionValue.startsWith(RequestData.FULL_LITERAL)) {
             errors.rejectValue("region", "region.invalid.start");
         }
@@ -118,13 +120,15 @@ public class RequestValidator implements Validator {
     private void validateFormat(RequestData requestData) {
 
         try {
-            ImageFormat.valueOf(requestData.getFormat().toUpperCase());
+            ImageFormat.valueOf(requestData.getFormat()
+                                           .toUpperCase());
         } catch (IllegalArgumentException iae) {
             throw new ImageServiceException("unknown format", 415, ParameterName.FORMAT);
         }
 
-        if (requestData.getFormat().equalsIgnoreCase(ImageFormat.JP2.name())
-                && !StringUtils.join(ImageIO.getWriterFormatNames()).contains("JPEG2000")) {
+        if (requestData.getFormat()
+                       .equalsIgnoreCase(ImageFormat.JP2.name()) && !StringUtils.join(ImageIO.getWriterFormatNames())
+                                                                                .contains("JPEG2000")) {
             throw new ImageServiceException("jp2 not supported", 415, ParameterName.FORMAT);
         }
 

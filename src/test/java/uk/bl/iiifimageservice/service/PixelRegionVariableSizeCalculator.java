@@ -5,9 +5,10 @@ import static org.junit.Assert.assertEquals;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 
+import javax.annotation.Resource;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -17,10 +18,10 @@ import uk.bl.iiifimageservice.util.ImageMetadataGenerator;
 import uk.bl.iiifimageservice.util.RequestDataGenerator;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:applicationContext-test.xml")
+@ContextConfiguration("classpath:image-servlet-test.xml")
 public class PixelRegionVariableSizeCalculator {
 
-    @Autowired
+    @Resource
     private RegionSizeCalculator regionSizeCalculator;
 
     private ImageMetadata imageMetadata = ImageMetadataGenerator.getTestImageMetadata();

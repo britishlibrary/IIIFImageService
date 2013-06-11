@@ -6,7 +6,8 @@ import java.awt.Rectangle;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.annotation.Resource;
+
 import org.springframework.stereotype.Service;
 
 import uk.bl.iiifimageservice.domain.ImageMetadata;
@@ -22,7 +23,7 @@ import uk.bl.iiifimageservice.util.RequestParser;
 @Service
 public class RegionSizeCalculator {
 
-    @Autowired
+    @Resource
     private RequestParser requestParser;
 
     /**
@@ -95,29 +96,34 @@ public class RegionSizeCalculator {
         if (requestData.isSizePercentage()) {
             BigDecimal sizePercent = requestData.getSizePercentageAsDecimal();
             d.width = sizePercent.multiply(new BigDecimal(regionSize.width).setScale(0, RoundingMode.HALF_EVEN))
-                    .intValue();
+                                 .intValue();
             d.height = sizePercent.multiply(new BigDecimal(regionSize.height).setScale(0, RoundingMode.HALF_EVEN))
-                    .intValue();
+                                  .intValue();
             return d;
         }
 
         if (requestData.isSizeBestFit()) {
             if (!requestData.isRegionFull()) {
-                regionSize = requestParser.getRegionValues(requestData).getSize();
+                regionSize = requestParser.getRegionValues(requestData)
+                                          .getSize();
             }
             BigDecimal scaleX = new BigDecimal(String.valueOf((double) Integer.parseInt(coords[0]) / regionSize.width));
             BigDecimal scaleY = new BigDecimal(String.valueOf((double) Integer.parseInt(coords[1]) / regionSize.height));
 
             if (scaleX.compareTo(scaleY) < 0) {
-                d.width = (new BigDecimal(regionSize.width)).multiply(scaleX).setScale(0, RoundingMode.HALF_EVEN)
-                        .intValue();
-                d.height = (new BigDecimal(regionSize.height)).multiply(scaleX).setScale(0, RoundingMode.HALF_EVEN)
-                        .intValue();
+                d.width = (new BigDecimal(regionSize.width)).multiply(scaleX)
+                                                            .setScale(0, RoundingMode.HALF_EVEN)
+                                                            .intValue();
+                d.height = (new BigDecimal(regionSize.height)).multiply(scaleX)
+                                                              .setScale(0, RoundingMode.HALF_EVEN)
+                                                              .intValue();
             } else {
-                d.width = (new BigDecimal(regionSize.width)).multiply(scaleY).setScale(0, RoundingMode.HALF_EVEN)
-                        .intValue();
-                d.height = (new BigDecimal(regionSize.height)).multiply(scaleY).setScale(0, RoundingMode.HALF_EVEN)
-                        .intValue();
+                d.width = (new BigDecimal(regionSize.width)).multiply(scaleY)
+                                                            .setScale(0, RoundingMode.HALF_EVEN)
+                                                            .intValue();
+                d.height = (new BigDecimal(regionSize.height)).multiply(scaleY)
+                                                              .setScale(0, RoundingMode.HALF_EVEN)
+                                                              .intValue();
 
             }
             return d;

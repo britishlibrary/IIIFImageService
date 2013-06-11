@@ -4,6 +4,7 @@ import java.io.StringWriter;
 import java.util.concurrent.Callable;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,8 +14,6 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -54,17 +53,16 @@ public class ImageController {
 
     private static final Logger log = LoggerFactory.getLogger(ImageController.class);
 
-    @Autowired
-    @Qualifier("kakaduExtractorStrategyName")
+    @Resource(name = "kakaduExtractorStrategyName")
     protected ImageService imageService;
 
-    @Autowired
+    @Resource
     private RequestValidator requestValidator;
 
-    @Autowired
+    @Resource
     private Jaxb2Marshaller marshaller;
 
-    @Autowired
+    @Resource
     private MessageSource messageSource;
 
     @RequestMapping(value = "/{identifier}/info", method = RequestMethod.GET)
@@ -171,8 +169,11 @@ public class ImageController {
 
     private ImageError extractErrorFrom(BindException bindException) {
 
-        ParameterName parameterName = ParameterName.valueOf(bindException.getFieldError().getField().toUpperCase());
-        String errorMessage = messageSource.getMessage(bindException.getFieldError().getCode(), null, null);
+        ParameterName parameterName = ParameterName.valueOf(bindException.getFieldError()
+                                                                         .getField()
+                                                                         .toUpperCase());
+        String errorMessage = messageSource.getMessage(bindException.getFieldError()
+                                                                    .getCode(), null, null);
         return new ImageError(parameterName, errorMessage);
 
     }
@@ -187,7 +188,8 @@ public class ImageController {
 
         String message = exception.getMessage();
         if (StringUtils.isEmpty(message)) {
-            message = exception.getClass().getName();
+            message = exception.getClass()
+                               .getName();
         }
         return new ImageError(ParameterName.UNKNOWN, message);
 
@@ -234,4 +236,5 @@ public class ImageController {
             throw new ImageServiceException("maximum length of URI is 1024", 414, ParameterName.UNKNOWN);
         }
     }
+
 }
