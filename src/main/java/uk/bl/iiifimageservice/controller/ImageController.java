@@ -83,7 +83,7 @@ public class ImageController {
     }
 
     @RequestMapping(value = { "/{identifier}/{region}/{size}/{rotation}/{quality}.{format}",
-            "/{identifier}/{region}/{size}/{rotation}/{quality}" }, method = RequestMethod.GET)
+            "/{identifier}/{region}/{size}/{rotation}/{quality}**" }, method = RequestMethod.GET)
     public @ResponseBody
     Callable<byte[]> getImage(final @Valid RequestData requestData, HttpServletRequest request,
             HttpServletResponse response) throws Exception {

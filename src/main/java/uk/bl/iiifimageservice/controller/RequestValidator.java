@@ -119,6 +119,11 @@ public class RequestValidator implements Validator {
 
     private void validateFormat(RequestData requestData) {
 
+        if (StringUtils.isEmpty(requestData.getFormat())) {
+            requestData.setFormat(ImageFormat.JPG.toString()
+                                                 .toLowerCase());
+        }
+
         try {
             ImageFormat.valueOf(requestData.getFormat()
                                            .toUpperCase());
