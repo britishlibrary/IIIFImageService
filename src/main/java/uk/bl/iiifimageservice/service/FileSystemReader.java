@@ -56,15 +56,10 @@ public class FileSystemReader {
         return imageLocationStrategy.getExtractedImagePath(identifier, extension);
     }
 
-    public String readFile(Path path) {
+    public String readFile(Path path) throws IOException {
 
         String logFileContents = null;
-        try {
-            logFileContents = new String(Files.readAllBytes(path));
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        logFileContents = new String(Files.readAllBytes(path));
 
         return logFileContents;
     }

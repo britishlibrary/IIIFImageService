@@ -7,7 +7,7 @@
 	<appender name="console" class="org.apache.log4j.ConsoleAppender">
 		<param name="Target" value="System.out" />
 		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="%d{HH:mm:ss} [%t] %c{1} - %m%n" />
+			<param name="ConversionPattern" value="%d{HH:mm:ss} [%t] %p %c{1} - %m%n" />
 		</layout>
 	</appender>
 	
@@ -15,12 +15,12 @@
 	    <param name="File" value="${catalina.home}/logs/sanddragonImageService.log" />
 	    <param name="DatePattern" value="'.'yyyy-MM-dd" />
 	    <layout class="org.apache.log4j.PatternLayout">
-	        <param name="ConversionPattern" value="%d{HH:mm:ss} [%t] %c{1} - %m%n" />
+	        <param name="ConversionPattern" value="%d{HH:mm:ss} [%t] %p %c{1} - %m%n" />
 	    </layout>
 	</appender>	
 	
 	<logger name="uk.bl.iiifimageservice">
-		<level value="debug" />
+		<level value="info" />
 	</logger>
 	
 	<root>

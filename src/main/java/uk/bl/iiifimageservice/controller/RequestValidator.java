@@ -128,7 +128,8 @@ public class RequestValidator implements Validator {
             ImageFormat.valueOf(requestData.getFormat()
                                            .toUpperCase());
         } catch (IllegalArgumentException iae) {
-            throw new ImageServiceException("unknown format", 415, ParameterName.FORMAT);
+            throw new ImageServiceException("unknown format [" + requestData.getFormat() + "]", 415,
+                    ParameterName.FORMAT);
         }
 
         if (requestData.getFormat()

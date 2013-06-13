@@ -56,7 +56,7 @@ public class RegionSizeCalculator {
      * <li>For a size with height defined the width is a value that maintains the aspect ratio.
      * <li>For a size defined by percent the width and height is scaled by the percentage value.
      * <li>For a size that has width and height explicitly defined return those values.
-     * <li>TODO For a best fit size
+     * <li>For a best fit size the image is scaled to be equal or less than requested width and height.
      * 
      * 
      * @param imageMetadata
@@ -148,7 +148,7 @@ public class RegionSizeCalculator {
     }
 
     /**
-     * The calculation of the reduction parameter depends upon the size being in a particular format.
+     * The calculation of the reduction parameter depends upon the size being in a particular style.
      * <ul>
      * <li>For full size return a zero width and height.
      * <li>For a size determined by width or height return the requested width or height.

@@ -163,7 +163,7 @@ public abstract class AbstractImageService implements ImageService {
 
     }
 
-    private ImageMetadata loadAndParseLogFile(String identifier) {
+    private ImageMetadata loadAndParseLogFile(String identifier) throws IOException {
 
         String logFile = fileSystemReader.readFile(fileSystemReader.getLogFileFromIdentifier(identifier));
 
