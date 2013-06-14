@@ -59,3 +59,18 @@ If you do not have any JPEG2000 images available example JPEG2000s can be downlo
 // Known Issues
 //
 1. Requests for invalid regions could be improved
+
+//
+// Release Notes
+//
+1.0.2 - number of scale factors matches levels from jp2 file
+      - added debug logging to show image locations on file system
+
+1.0.1 - configurable generation of jpgs (see properties file for details)
+      - name of properties file now matches war file name
+      - cjpeg quality parameter added
+      - temporary file location moved to standard Java location
+      - bug fixes – main one was the broken rotation plus one on multi-threaded access to file
+      - more and better error handling
+
+1.0.0 - First release

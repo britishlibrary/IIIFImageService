@@ -33,11 +33,14 @@ public class FileSystemReader {
 
     public boolean imageFileExists(String identifier) {
         Path path = getImagePathFromIdentifier(identifier);
+        log.debug("Expected image location [" + path.toString() + "]");
         return Files.exists(path) && !Files.isDirectory(path);
     }
 
     public Path getLogFileFromIdentifier(String identifier) {
-        return imageLocationStrategy.getLogPath(identifier);
+        Path path = imageLocationStrategy.getLogPath(identifier);
+        log.debug("Log file location [" + path.toString() + "]");
+        return path;
     }
 
     public boolean logFileExists(String identifier) {
@@ -48,7 +51,7 @@ public class FileSystemReader {
     public Path getOutputFilename() {
         Path outputFilename = imageLocationStrategy.getExtractedImagePath(UUID.randomUUID()
                                                                               .toString(), ".bmp");
-        log.debug("UUID generated path [" + outputFilename.toString() + "]");
+        log.debug("UUID generated output path [" + outputFilename.toString() + "]");
         return outputFilename;
     }
 

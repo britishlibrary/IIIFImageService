@@ -69,7 +69,7 @@ public class LogFileExtractor {
         Integer levels = null;
         Matcher levelsMatcher = levelsPattern.matcher(logFile);
         if (levelsMatcher.find()) {
-            levels = Integer.valueOf(levelsMatcher.group(1)) - 1;
+            levels = Integer.valueOf(levelsMatcher.group(1));
         }
 
         List<Integer> scaleFactors = new ArrayList<>();
