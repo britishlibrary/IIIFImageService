@@ -1,0 +1,114 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Dev Env Config for Sanddragon Image Service</title>
+<style>
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 90%;
+	margin: 10px;
+	padding: 0px;
+    }
+
+.imgText {
+    text-align: justify;
+}
+
+.imgText img {
+    display: block;
+    margin-bottom: 10px
+}
+
+.imgText li {
+    margin-bottom: 10px
+}
+
+</style>
+</head>
+<body >
+<h1>How-to Setup A Development Environment for the Sanddragon Image Service</h1>
+
+The steps below detail how to setup Java, Eclipse and Tomcat to build and run the Sanddragon Image Service. All the software required is freely available. If, at any stage, there are any prompts that you are unfamiliar with then accept the defaults offered.<p>
+
+<div class="imgText">
+<ol>
+<li>Download and install the following software<p>
+Java SE 7 JDK - <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">http://www.oracle.com/technetwork/java/javase/downloads/index.html</a><p>
+Eclipse IDE for Java EE Developers - <a href="http://www.eclipse.org/downloads/packages/eclipse-ide-java-ee-developers/keplerr">http://www.eclipse.org/downloads/packages/eclipse-ide-java-ee-developers/keplerr</a><p>
+Tomcat 7 - <a href="http://tomcat.apache.org/download-70.cgi">http://tomcat.apache.org/download-70.cgi</a> (zip version)<p>
+
+Run the Java installer and accept the defaults. Extract the Eclipse and Tomcat zips to your chosen locations.<p>
+</li>
+
+<li>
+There are three Sanddragon projects checked into Subversion. They are SanddragonImageService, SanddragonItemViewer and SanddragonWidget.<p>
+They can be found at -<p>
+	https://v8b-vera.ad.bl.uk/svn/Architecture/IIIFLinuxPort/trunk/SanddragonImageService<br>
+	https://v8b-vera.ad.bl.uk/svn/Architecture/IIIFLinuxPort/trunk/SanddragonItemViewer<br>
+	https://v8b-vera.ad.bl.uk/svn/Architecture/IIIFLinuxPort/trunk/SanddragonWidget<br>
+</li>
+
+<li>Once Java, Eclipse and Tomcat are installed the next step is to install the Subclipse Eclipse plugin. This links Eclipse and Subversion. Open Eclipse, select Help|Marketplace, enter subclipse in the search box and hit enter.
+        <p>
+        <img src="images/subclipseMarketplace.png">
+        <p>
+    Click the Install button and then, in the following dialog, click Confirm, accept the terms of the licence and click Finish. OK any unsigned content warnings and restart Eclipse.
+</li>
+
+
+<li>Install the Maven Subclipse connector
+    <ol>
+	<li>In Eclipse, select File|Import...|Maven|Checkout Maven Project from SCM|Next
+        <p>
+        <img src="images/mavenCheckout.png">
+        <p>
+    </li>
+    <li>Click m2e Marketplace. Scroll down to m2e-subclipse, check it and click Finish.
+        <p>
+        <img src="images/mavenConnectorsm2e-subclipse.png">
+        <p>
+    </li>
+    <li>In the dialog that appears, click Next, Next, agree the licence terms and click Finish. OK any unsigned content warnings and restart Eclipse.</li>
+    </ol>
+</li>
+    
+<li>Check-out the projects from Subversion into Eclipse
+    <ol>
+    <li>Repeat step 1 i.e. select File|Import...|Maven|Checkout Maven Project from SCM|Next</li>
+    <li>This time, select svn from the SCM URL: dropdown. Copy the SanddragonImageService url above into adjoining box.</li>
+    <li>Click Next and, finally, Finish.</li>
+    <li>The end result should be a fully compiled Maven-enabled project with no compile errors ready for development and building.</li>
+    <li>Repeat for the other two projects</li>
+    </ol>
+</li>
+
+<li>Development and Building
+    <ol>
+    <li>Once edits are completed (the main entry point is ImageController.java) build a new war file by right-clicking on the project name and selecting Run As...|Maven Build...</li>
+    <li>In the dialog that appears enter 'clean package' in the Goals: field.
+        <p>
+        <img src="images/mavenCleanPackage.png">
+        <p>
+    </li>
+    <li>Click Run. Some unit tests will run and assuming there are no failures or build problems there will be a new war file called SanddragonImageService.war. It can be found in the target directory off the Eclipse project directory. For subsequent builds just select Maven build</li>
+    
+    </ol>
+</li>
+
+<li>Deployment
+    <ol>
+    <li>Drop the war file into the webapps directory of Tomcat. 
+    <li>Start Tomcat by running bin\startup.bat
+    <li>The service will be available at http://localhost:8080/SanddragonImageService/ (the url will need to be completed with image name and other parameters).
+    <li>Tomcat can also be installed using an .exe and run as a service. This only affects how it is started and stopped.
+    </ol>
+</li>    
+
+<li>Other issues - Maven may need additional configuration to get through the proxy to the Internet. Drop <a href="settings.xml">this</a> settings file into %USERPROFILE%\.m2 directory. Enter your own credentials first.
+
+
+</ol>
+<div>
+</body>
+</html>

@@ -1,4 +1,6 @@
 /**
+ * Domain objects representing parameters supplied to the service plus http responses.
+ * 
  * @author pblake
  */
 @XmlSchema(namespace = "http://library.stanford.edu/iiif/image-api/ns/", elementFormDefault = XmlNsForm.QUALIFIED)

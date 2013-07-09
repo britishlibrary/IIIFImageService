@@ -65,7 +65,7 @@ public class KakaduParameterCalculator {
                 scaleX = widthScale;
                 scaleY = heightScale;
 
-                if (scaleX.compareTo(scaleY) > 0) { // scalex < scaley
+                if (scaleX.compareTo(scaleY) > 0) {
                     scale = scaleX;
                 } else {
                     scale = scaleY;
@@ -74,13 +74,13 @@ public class KakaduParameterCalculator {
                 tileHeight = new BigDecimal(String.valueOf(imageMetadata.getHeight())).multiply(scale, precisonTen);
 
             } else if (requestedSize.width != 0 && requestedSize.height != 0) {
-                if (tileWidth.compareTo(BigDecimal.ZERO) > 0) { // tilewidth > 0
+                if (tileWidth.compareTo(BigDecimal.ZERO) > 0) {
                     scaleX = requestedSizeWidth.divide(tileWidth, precisonTen);
                 } else {
                     scaleX = widthScale;
                 }
 
-                if (tileHeight.compareTo(BigDecimal.ZERO) > 0) { // tileheight > 0
+                if (tileHeight.compareTo(BigDecimal.ZERO) > 0) {
                     scaleY = requestedSizeHeight.divide(tileHeight, precisonTen);
                 } else {
                     scaleY = heightScale;
@@ -88,7 +88,7 @@ public class KakaduParameterCalculator {
 
                 if (requestedSize.width == requestedSize.height) {
                     scale = scaleX; // both scales should be the same so shouldn't matter
-                } else if (requestedSizeWidth.compareTo(requestedSizeHeight) > 0) { // p_state.Width > p_state.Height
+                } else if (requestedSizeWidth.compareTo(requestedSizeHeight) > 0) {
                     scale = scaleX;
                 } else {
                     scale = scaleY;
@@ -123,28 +123,26 @@ public class KakaduParameterCalculator {
         // size best fit
         if (requestData.isSizeBestFit()) {
             if (tileWidth.compareTo(BigDecimal.ZERO) > 0) {
-                scaleX = requestedSizeWidth.divide(tileWidth, precisonTen); // p_state.Width / tilewidth;
+                scaleX = requestedSizeWidth.divide(tileWidth, precisonTen);
             } else {
                 scaleX = widthScale;
             }
 
             if (tileHeight.compareTo(BigDecimal.ZERO) > 0) {
-                scaleY = requestedSizeHeight.divide(tileHeight, precisonTen); // p_state.Height / tileheight;
+                scaleY = requestedSizeHeight.divide(tileHeight, precisonTen);
             } else {
                 scaleY = heightScale;
             }
 
-            if (scaleX.compareTo(scaleY) < 0) { // scalex < scaley
+            if (scaleX.compareTo(scaleY) < 0) {
                 scale = scaleX;
             } else {
                 scale = scaleY;
             }
 
             // get all
-            if (requestData.isRegionFull()) { // (p_state.Region.Equals("all"))
-                // int.Parse(Math.Round(imageSize.Width * scale).ToString());
+            if (requestData.isRegionFull()) {
                 tileWidth = new BigDecimal(imageMetadata.getWidth()).multiply(scale, precisonTen);
-                // int.Parse(Math.Round(imageSize.Height * scale).ToString());
                 tileHeight = new BigDecimal(imageMetadata.getHeight()).multiply(scale, precisonTen);
             }
 
@@ -152,14 +150,10 @@ public class KakaduParameterCalculator {
 
         // size %
         if (requestData.isSizePercentage()) {
-            scale = requestData.getSizePercentageAsDecimal(); // p_state.Size;
+            scale = requestData.getSizePercentageAsDecimal();
 
-            // get all
-            if (requestData.isRegionFull()) // (p_state.Region.Equals("all"))
-            {
-                // int.Parse(Math.Round(imageSize.Width * scale).ToString());
+            if (requestData.isRegionFull()) {
                 tileWidth = requestedSizeWidth;
-                // int.Parse(Math.Round(imageSize.Height * scale).ToString());
                 tileHeight = requestedSizeHeight;
             }
 
@@ -173,12 +167,11 @@ public class KakaduParameterCalculator {
             }
         }
 
-        // Convert.ToInt32(1 / scale);
         int reduce = BigDecimal.ONE.divide(scale, precisonTen)
                                    .setScale(0, RoundingMode.HALF_EVEN)
                                    .intValue();
         if (reduce > 0) {
-            reduce = (int) Math.floor(logOfBase(2.5, reduce)); // Convert.ToInt32(Math.Floor(Math.Log(reduce, 2.5)));
+            reduce = (int) Math.floor(logOfBase(2.5, reduce));
         }
 
         log.debug("reduce [" + reduce + "]");
