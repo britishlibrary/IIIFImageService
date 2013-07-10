@@ -12,10 +12,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import uk.bl.iiifimageservice.domain.ImageError.ParameterName;
 import uk.bl.iiifimageservice.domain.ImageMetadata;
 import uk.bl.iiifimageservice.domain.ImageQuality;
 import uk.bl.iiifimageservice.domain.RequestData;
 import uk.bl.iiifimageservice.service.kakaduextractor.SimpleKakaduExtractor;
+import uk.bl.iiifimageservice.util.ImageServiceException;
 
 /**
  * Once the requested region has been extracted from Kakadu the image is resized, rotated etc here.
@@ -35,10 +37,12 @@ public class ImageManipulator {
             ImageMetadata jp2ImageMetadata) {
 
         Dimension requestedSize = regionSizeCalculator.getSizeForImageManipulation(jp2ImageMetadata, requestData);
+        zeroSizeCheck(requestedSize);
         log.debug("result image size [" + requestedSize.toString() + "]");
 
         if (requestData.isARotation()) {
             requestedSize = regionSizeCalculator.resizeForRotation(requestData, requestedSize);
+            zeroSizeCheck(requestedSize);
             log.debug("result image size for rotation [" + requestedSize.toString() + "]");
             extractedImage = rotate(extractedImage, requestData);
         }
@@ -50,6 +54,14 @@ public class ImageManipulator {
         g.dispose();
 
         return resizedImage;
+
+    }
+
+    private void zeroSizeCheck(Dimension requestedSize) {
+
+        if (requestedSize.width == 0 || requestedSize.height == 0) {
+            throw new ImageServiceException("image width or height is zero", 400, ParameterName.SIZE);
+        }
 
     }
 

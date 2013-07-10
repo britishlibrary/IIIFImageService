@@ -56,11 +56,6 @@ If you do not have any JPEG2000 images available example JPEG2000s can be downlo
 4. If any X11 errors occur when running on a unix platform try setting the CATALINA_OPTS env variable to -Djava.awt.headless=true 
 
 //
-// Known Issues
-//
-1. Requests for invalid regions could be improved
-
-//
 // Release Notes
 //
 1.0.2 - number of scale factors matches levels from jp2 file

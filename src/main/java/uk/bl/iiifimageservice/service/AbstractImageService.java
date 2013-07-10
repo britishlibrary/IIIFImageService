@@ -85,7 +85,13 @@ public abstract class AbstractImageService implements ImageService {
         log.debug("Reading in extracted file from [" + bmpFile.toString() + "]");
         BufferedImage bmpInputImage = null;
 
-        bmpInputImage = ImageIO.read(bmpFile.toFile());
+        try {
+            bmpInputImage = ImageIO.read(bmpFile.toFile());
+        } catch (IllegalArgumentException iae) {
+            // occurs when kakadu generates file that is unreadable due to bad inputs
+            // e.g. the resulting file has width or height <= 0
+            throw new ImageServiceException(iae.getMessage(), 400, ParameterName.UNKNOWN);
+        }
         Files.delete(bmpFile);
 
         BufferedImage manipulatedImage = imageManipulator.changeImage(bmpInputImage, requestData, jp2ImageMetadata);
