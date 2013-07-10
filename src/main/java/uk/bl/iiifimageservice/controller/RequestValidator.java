@@ -44,7 +44,6 @@ public class RequestValidator implements Validator {
             ImageQuality.valueOf(requestData.getQuality()
                                             .toUpperCase());
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             errors.rejectValue("quality", "quality.invalid");
         }
 
