@@ -10,6 +10,7 @@ import org.springframework.validation.Validator;
 
 import uk.bl.iiifimageservice.domain.ImageError.ParameterName;
 import uk.bl.iiifimageservice.domain.ImageFormat;
+import uk.bl.iiifimageservice.domain.ImageQuality;
 import uk.bl.iiifimageservice.domain.RequestData;
 import uk.bl.iiifimageservice.util.ImageServiceException;
 import uk.bl.iiifimageservice.util.RequestParser;
@@ -33,6 +34,19 @@ public class RequestValidator implements Validator {
         validateSize(requestData, errors);
         validateFormat(requestData);
         validateRotation(requestData, errors);
+        validateQuality(requestData, errors);
+
+    }
+
+    private void validateQuality(RequestData requestData, Errors errors) {
+
+        try {
+            ImageQuality.valueOf(requestData.getQuality()
+                                            .toUpperCase());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            errors.rejectValue("quality", "quality.invalid");
+        }
 
     }
 
