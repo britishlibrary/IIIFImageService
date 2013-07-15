@@ -32,8 +32,7 @@ public class RequestData {
     }
 
     public void setIdentifier(String identifier) {
-        // as identifier is used to write files, clean it.
-        this.identifier = identifier.replaceAll("[^a-zA-Z0-9.-]", "_");
+        this.identifier = identifier;
     }
 
     public String getRegion() {
@@ -164,6 +163,15 @@ public class RequestData {
 
     public boolean isFormatJpg() {
         return format.equalsIgnoreCase("jpg");
+    }
+
+    /**
+     * Remove any OS-unfriendly characters from filename
+     * 
+     * @return identifier comprising only of letters a-z, A-Z, digits, full stop and hyphen
+     */
+    public String getCleanIdentifier() {
+        return identifier.replaceAll("[^a-zA-Z0-9.-]", "_");
     }
 
     @Override

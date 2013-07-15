@@ -18,14 +18,15 @@ public class ImageError {
     }
 
     public enum ParameterName {
-        @XmlEnumValue("unknown")
-        UNKNOWN, @XmlEnumValue("identifier")
-        IDENTIFIER, @XmlEnumValue("region")
-        REGION, @XmlEnumValue("size")
-        SIZE, @XmlEnumValue("rotation")
-        ROTATION, @XmlEnumValue("quality")
-        QUALITY, @XmlEnumValue("format")
-        FORMAT
+        // @formatter:off
+        @XmlEnumValue("unknown") UNKNOWN, 
+        @XmlEnumValue("identifier") IDENTIFIER, 
+        @XmlEnumValue("region") REGION, 
+        @XmlEnumValue("size") SIZE, 
+        @XmlEnumValue("rotation") ROTATION, 
+        @XmlEnumValue("quality") QUALITY, 
+        @XmlEnumValue("format") FORMAT
+        // @formatter:on
     }
 
     private ParameterName parameterName;
