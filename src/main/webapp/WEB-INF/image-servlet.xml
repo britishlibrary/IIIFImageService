@@ -24,13 +24,15 @@
     <alias name="${image.location.strategy}" alias="imageLocationStrategyName"/>
     <alias name="${kakadu.extractor.strategy}" alias="kakaduExtractorStrategyName"/>
     
-<!-- Add the following 5 lines to mvc:annotation-driven element to allow more time for a call to complete -->    
-<!-- 		<mvc:async-support default-timeout="3000"> -->
-<!-- 			<mvc:callable-interceptors> -->
-<!-- 				<bean class="uk.bl.iiifimageservice.controller.TimeoutCallableProcessingInterceptor" /> -->
-<!-- 			</mvc:callable-interceptors> -->
-<!-- 		</mvc:async-support> -->
-	<mvc:annotation-driven/>
+<!-- The default-timeout property specifies how long the separate thread has to complete before the interceptor kicks in -->
+<!-- Currently set to a generous 10 seconds -->
+	<mvc:annotation-driven>
+		<mvc:async-support default-timeout="10000">
+			<mvc:callable-interceptors>
+				<bean class="uk.bl.iiifimageservice.controller.TimeoutCallableProcessingInterceptor" />
+			</mvc:callable-interceptors>
+		</mvc:async-support>
+	</mvc:annotation-driven>		
 	
 	<mvc:interceptors>
 	    <bean class="uk.bl.iiifimageservice.controller.LoggingRequestInterceptor" /> 

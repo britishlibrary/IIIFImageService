@@ -172,6 +172,9 @@ public abstract class AbstractImageService implements ImageService {
     private ImageMetadata loadAndParseLogFile(String identifier) throws IOException {
 
         String logFile = fileSystemReader.readFile(fileSystemReader.getLogFileFromIdentifier(identifier));
+        if (StringUtils.isEmpty(logFile)) {
+            throw new ImageServiceException("image metadata log file empty", 500, ParameterName.UNKNOWN);
+        }
 
         log.trace("identifier [" + identifier + "] produces log file [" + logFile + "]");
 
