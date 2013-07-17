@@ -32,6 +32,9 @@ public abstract class AbstractImageService implements ImageService {
     @Value("${kakadu.binary.path}")
     protected String kakaduBinaryPath;
 
+    @Value("${bmp.delete}")
+    protected boolean bmpDelete;
+
     @Resource
     protected FileSystemReader fileSystemReader;
 
@@ -92,7 +95,9 @@ public abstract class AbstractImageService implements ImageService {
             // e.g. the resulting file has width or height <= 0
             throw new ImageServiceException(iae.getMessage(), 400, ParameterName.UNKNOWN);
         }
-        Files.delete(bmpFile);
+        if (bmpDelete) {
+            Files.delete(bmpFile);
+        }
 
         BufferedImage manipulatedImage = imageManipulator.changeImage(bmpInputImage, requestData, jp2ImageMetadata);
 
