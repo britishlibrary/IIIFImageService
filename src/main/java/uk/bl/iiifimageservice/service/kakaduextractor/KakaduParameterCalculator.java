@@ -30,7 +30,7 @@ public class KakaduParameterCalculator {
     @Resource
     private RegionSizeCalculator regionSizeCalculator;
 
-    public int calculateReduceParameter(ImageMetadata imageMetadata, RequestData requestData) {
+    public BigDecimal calculateScale(ImageMetadata imageMetadata, RequestData requestData) {
 
         MathContext precisonTen = new MathContext(10, RoundingMode.HALF_EVEN);
         Rectangle requestedRegion = regionSizeCalculator.getRegionCoordinates(imageMetadata, requestData);
@@ -167,16 +167,25 @@ public class KakaduParameterCalculator {
             }
         }
 
-        int reduce = BigDecimal.ONE.divide(scale, precisonTen)
+        return scale;
+
+    }
+
+    public int calculateReduceParameter(ImageMetadata imageMetadata, RequestData requestData) {
+
+        BigDecimal scale = calculateScale(imageMetadata, requestData);
+
+        int reduce = BigDecimal.ONE.divide(scale, new MathContext(10, RoundingMode.HALF_EVEN))
                                    .setScale(0, RoundingMode.HALF_EVEN)
                                    .intValue();
         if (reduce > 0) {
-            reduce = (int) Math.floor(logOfBase(2.5, reduce));
+            reduce = (int) Math.floor(logOfBase(2, reduce));
         }
 
         log.debug("reduce [" + reduce + "]");
 
         return reduce;
+
     }
 
     public double logOfBase(double base, int num) {

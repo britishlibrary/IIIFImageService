@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 
 import javax.annotation.Resource;
@@ -16,6 +17,7 @@ import uk.bl.iiifimageservice.domain.ImageError.ParameterName;
 import uk.bl.iiifimageservice.domain.ImageMetadata;
 import uk.bl.iiifimageservice.domain.ImageQuality;
 import uk.bl.iiifimageservice.domain.RequestData;
+import uk.bl.iiifimageservice.service.kakaduextractor.KakaduParameterCalculator;
 import uk.bl.iiifimageservice.service.kakaduextractor.SimpleKakaduExtractor;
 import uk.bl.iiifimageservice.util.ImageServiceException;
 
@@ -33,10 +35,19 @@ public class ImageManipulator {
     @Resource
     private RegionSizeCalculator regionSizeCalculator;
 
-    public BufferedImage changeImage(BufferedImage extractedImage, RequestData requestData,
-            ImageMetadata jp2ImageMetadata) {
+    @Resource
+    protected KakaduParameterCalculator kakaduParameterCalculator;
 
-        Dimension requestedSize = regionSizeCalculator.getSizeForImageManipulation(jp2ImageMetadata, requestData);
+    public BufferedImage changeImage(BufferedImage extractedImage, RequestData requestData, ImageMetadata imageMetadata) {
+
+        Dimension requestedSize = new Dimension();
+        if (isSizeExact(requestData, imageMetadata)) {
+            requestedSize.width = extractedImage.getWidth();
+            requestedSize.height = extractedImage.getHeight();
+        } else {
+            requestedSize = regionSizeCalculator.getSizeForImageManipulation(imageMetadata, requestData);
+        }
+
         zeroSizeCheck(requestedSize);
         log.debug("result image size [" + requestedSize.toString() + "]");
 
@@ -55,6 +66,36 @@ public class ImageManipulator {
 
         return resizedImage;
 
+    }
+
+    /**
+     * It's possible that the Kakadu generated image is the exact resize requested. Where the scale factor returned by
+     * the log file matches the scaling requested then no resizing is performed by this image service.
+     * 
+     * @param requestData
+     * @param imageMetadata
+     * @return
+     */
+    private boolean isSizeExact(RequestData requestData, ImageMetadata imageMetadata) {
+
+        boolean isSizeExact = false;
+        BigDecimal scale = kakaduParameterCalculator.calculateScale(imageMetadata, requestData);
+
+        int possibleScaleFactor = 0;
+        try {
+            possibleScaleFactor = BigDecimal.ONE.divide(scale, new MathContext(10, RoundingMode.HALF_EVEN))
+                                                .intValueExact();
+        } catch (ArithmeticException ae) {
+            isSizeExact = false;
+        }
+
+        if (imageMetadata.getScaleFactors()
+                         .contains(possibleScaleFactor)) {
+            log.debug("requested resize matches scale factor [" + possibleScaleFactor + "] exactly");
+            isSizeExact = true;
+        }
+
+        return isSizeExact;
     }
 
     private void zeroSizeCheck(Dimension requestedSize) {

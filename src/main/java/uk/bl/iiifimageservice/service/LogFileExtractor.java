@@ -71,11 +71,12 @@ public class LogFileExtractor {
         if (levelsMatcher.find()) {
             levels = Integer.valueOf(levelsMatcher.group(1));
         }
+        log.debug("levels value from log file [" + levels + "]");
 
         List<Integer> scaleFactors = new ArrayList<>();
-        for (int i = 0; i < levels; i++) {
+        scaleFactors.add(1);
+        for (int i = 1; i < levels; i++) {
             scaleFactors.add((int) Math.pow(2, i));
-
         }
 
         return scaleFactors;
