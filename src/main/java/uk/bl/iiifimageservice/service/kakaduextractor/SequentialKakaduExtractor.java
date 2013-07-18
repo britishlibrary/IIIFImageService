@@ -38,6 +38,9 @@ public class SequentialKakaduExtractor extends AbstractImageService {
     @Value("${cjpeg.quality}")
     protected String cjpegQuality;
 
+    @Value("${jpg.delete}")
+    protected boolean jpgDelete;
+
     @Override
     public byte[] extractImage(RequestData requestData) throws InterruptedException, IOException {
 
@@ -49,17 +52,21 @@ public class SequentialKakaduExtractor extends AbstractImageService {
 
         ImageMetadata jp2ImageMetadata = extractImageMetadata(requestData.getIdentifier());
 
-        Path bmpFile = fileSystemReader.getOutputFilename();
+        Path bmpFile = fileSystemReader.getOutputFilename(".bmp");
         // create .bmp file
         callShellCommand(buildExtractImageCommandString(kakaduBinaryPath, requestData, jp2ImageMetadata, bmpFile));
 
-        Path jpgFile = fileSystemReader.getOutputFilename(requestData.getIdentifier(), ".jpg");
+        Path jpgFile = fileSystemReader.getOutputFilename(".jpg");
         // create .jpg file
         callShellCommand(buildConvertBmpCommandString(requestData, jp2ImageMetadata, bmpFile, jpgFile));
+        if (bmpDelete) {
+            Files.delete(bmpFile);
+        }
 
-        Files.delete(bmpFile);
         BufferedImage jpgInputImage = ImageIO.read(jpgFile.toFile());
-        Files.delete(jpgFile);
+        if (jpgDelete) {
+            Files.delete(jpgFile);
+        }
 
         BufferedImage manipulatedImage = imageManipulator.changeImage(jpgInputImage, requestData, jp2ImageMetadata);
 

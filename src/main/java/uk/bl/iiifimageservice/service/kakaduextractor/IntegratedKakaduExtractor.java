@@ -32,6 +32,9 @@ public class IntegratedKakaduExtractor extends AbstractImageService {
     @Value("${integrated.binary.path}")
     protected String integratedBinaryPath;
 
+    @Value("${jpg.delete}")
+    protected boolean jpgDelete;
+
     @Override
     public byte[] extractImage(RequestData requestData) throws InterruptedException, IOException {
 
@@ -43,12 +46,14 @@ public class IntegratedKakaduExtractor extends AbstractImageService {
 
         ImageMetadata jp2ImageMetadata = extractImageMetadata(requestData.getIdentifier());
 
-        Path jpgFile = fileSystemReader.getOutputFilename(requestData.getIdentifier(), ".jpg");
+        Path jpgFile = fileSystemReader.getOutputFilename(".jpg");
         // create output .jpg file
         callShellCommand(buildExtractImageCommandString(integratedBinaryPath, requestData, jp2ImageMetadata, jpgFile));
 
         BufferedImage jpgInputImage = ImageIO.read(jpgFile.toFile());
-        Files.delete(jpgFile);
+        if (jpgDelete) {
+            Files.delete(jpgFile);
+        }
 
         BufferedImage manipulatedImage = imageManipulator.changeImage(jpgInputImage, requestData, jp2ImageMetadata);
 

@@ -80,7 +80,7 @@ public abstract class AbstractImageService implements ImageService {
 
         ImageMetadata jp2ImageMetadata = extractImageMetadata(requestData.getIdentifier());
 
-        Path bmpFile = fileSystemReader.getOutputFilename();
+        Path bmpFile = fileSystemReader.getOutputFilename(".bmp");
 
         // create .bmp file
         callShellCommand(buildExtractImageCommandString(kakaduBinaryPath, requestData, jp2ImageMetadata, bmpFile));

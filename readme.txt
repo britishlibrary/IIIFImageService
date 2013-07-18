@@ -22,7 +22,8 @@ This project was developed using the Kakadu Software kdu_expand.exe component an
 6. Update your SanddragonImageService.properties kakadu.binary.path property to point to the location of the Kakadu installation, if needed. 
 		The default is C:\Program Files (x86)\Kakadu\kdu_expand.exe
 7. Update your SanddragonImageService.properties image.root.path property to point to the location of your JP2 files. The default is C:\JP2Cache
-8. Temporary files are stored in the location determined by java.io.tmpdir system property e.g. C:\Dev\apache-tomcat-7.0.35\temp. 
+8. Temporary files are stored in the location determined by java.io.tmpdir system property e.g. C:\Dev\apache-tomcat-7.0.35\temp. There is a property 
+		to switch off deletion of temporary .bmp files. Some extractors generate .jpg files. There is a similar option for these.  
 9. There are currently two strategies for resolving the image location. When using the SimpleImageLocationStrategy the jp2 file would be located at c:\JP2Cache\imagefilename.jp2. 
 		When using the DirectoryFileNoExtensionImageLocationStrategy the jp2 file would be located at c:\JP2Cache\imagefilename\imagefilename   
 10. The conversion of jpg images from the output of Kadadu is configurable. It is set via a property in SanddragonImageService.properties called kakadu.extractor.strategy. The valid values are -

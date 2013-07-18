@@ -38,6 +38,9 @@ public class PipedKakaduExtractor extends AbstractImageService {
     @Value("${cjpeg.quality}")
     protected String cjpegQuality;
 
+    @Value("${jpg.delete}")
+    protected boolean jpgDelete;
+
     @Override
     public byte[] extractImage(RequestData requestData) throws InterruptedException, IOException {
 
@@ -49,12 +52,14 @@ public class PipedKakaduExtractor extends AbstractImageService {
 
         ImageMetadata jp2ImageMetadata = extractImageMetadata(requestData.getIdentifier());
 
-        Path jpgFile = fileSystemReader.getOutputFilename(requestData.getIdentifier(), ".jpg");
+        Path jpgFile = fileSystemReader.getOutputFilename(".jpg");
         // create output .jpg file
         callShellCommand(buildPipedExtractImageCommandString(requestData, jp2ImageMetadata, jpgFile));
 
         BufferedImage jpgInputImage = ImageIO.read(jpgFile.toFile());
-        Files.delete(jpgFile);
+        if (jpgDelete) {
+            Files.delete(jpgFile);
+        }
 
         BufferedImage manipulatedImage = imageManipulator.changeImage(jpgInputImage, requestData, jp2ImageMetadata);
 
@@ -70,7 +75,8 @@ public class PipedKakaduExtractor extends AbstractImageService {
 
         int reduce = kakaduParameterCalculator.calculateReduceParameter(imageMetadata, requestData);
 
-        String jp2ImageFilename = fileSystemReader.getImagePathFromIdentifier(requestData.getIdentifier()).toString();
+        String jp2ImageFilename = fileSystemReader.getImagePathFromIdentifier(requestData.getIdentifier())
+                                                  .toString();
 
         try {
             Integer.valueOf(cjpegQuality);

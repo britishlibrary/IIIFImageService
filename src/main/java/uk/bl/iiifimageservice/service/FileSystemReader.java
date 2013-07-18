@@ -48,15 +48,11 @@ public class FileSystemReader {
         return Files.exists(path) && !Files.isDirectory(path);
     }
 
-    public Path getOutputFilename() {
+    public Path getOutputFilename(String extension) {
         Path outputFilename = imageLocationStrategy.getExtractedImagePath(UUID.randomUUID()
-                                                                              .toString(), ".bmp");
+                                                                              .toString(), extension);
         log.debug("UUID generated output path [" + outputFilename.toString() + "]");
         return outputFilename;
-    }
-
-    public Path getOutputFilename(String identifier, String extension) {
-        return imageLocationStrategy.getExtractedImagePath(identifier, extension);
     }
 
     public String readFile(Path path) throws IOException {
