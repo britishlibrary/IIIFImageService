@@ -48,7 +48,7 @@ public class RequestDataTest {
         RequestData requestData = new RequestData();
         requestData.setRegion("80,15,60,75");
 
-        Rectangle coords = regionSizeCalculator.getRegionCoordinates(imageMetadata, requestData);
+        Rectangle coords = regionSizeCalculator.getRegionCoordinates(requestData, imageMetadata);
 
         assertTrue("X coord wrong, expected 80, got " + coords.getX(), coords.getX() == 80d);
         assertTrue("Y coord wrong", coords.getY() == 15d);

@@ -30,17 +30,18 @@ public class RegionSizeCalculator {
      * Returns the requested region as pixel values. The three region types are catered for i.e. full, percentage and
      * absolute.
      * 
-     * @param imageMetadata
      * @param requestData
+     * @param imageMetadata
+     * 
      * @return
      */
-    public Rectangle getRegionCoordinates(ImageMetadata imageMetadata, RequestData requestData) {
+    public Rectangle getRegionCoordinates(RequestData requestData, ImageMetadata imageMetadata) {
 
         if (requestData.isRegionFull()) {
             return new Rectangle(new Point(), new Dimension(imageMetadata.getWidth(), imageMetadata.getHeight()));
         }
 
-        Rectangle regionValues = requestParser.getRegionValues(requestData);
+        Rectangle regionValues = requestParser.getRegionValues(requestData, imageMetadata);
         if (requestData.isRegionPercentage()) {
             regionValues = getRegionCoordinatesFromPercent(imageMetadata, regionValues);
         }
@@ -67,7 +68,7 @@ public class RegionSizeCalculator {
 
         Dimension d = new Dimension();
 
-        Dimension regionSize = getRegionCoordinates(imageMetadata, requestData).getSize();
+        Dimension regionSize = getRegionCoordinates(requestData, imageMetadata).getSize();
 
         if (requestData.isSizeFull()) {
             return regionSize;
@@ -104,7 +105,7 @@ public class RegionSizeCalculator {
 
         if (requestData.isSizeBestFit()) {
             if (!requestData.isRegionFull()) {
-                regionSize = requestParser.getRegionValues(requestData)
+                regionSize = requestParser.getRegionValues(requestData, imageMetadata)
                                           .getSize();
             }
             BigDecimal scaleX = new BigDecimal(String.valueOf((double) Integer.parseInt(coords[0]) / regionSize.width));
@@ -197,9 +198,9 @@ public class RegionSizeCalculator {
         return d;
     }
 
-    public Rectangle getRegion(RequestData requestData) {
+    public Rectangle getRegion(RequestData requestData, ImageMetadata imageMetadata) {
 
-        return requestParser.getRegionValues(requestData);
+        return requestParser.getRegionValues(requestData, imageMetadata);
 
     }
 

@@ -33,7 +33,7 @@ public class KakaduParameterCalculator {
     public BigDecimal calculateScale(ImageMetadata imageMetadata, RequestData requestData) {
 
         MathContext precisonTen = new MathContext(10, RoundingMode.HALF_EVEN);
-        Rectangle requestedRegion = regionSizeCalculator.getRegionCoordinates(imageMetadata, requestData);
+        Rectangle requestedRegion = regionSizeCalculator.getRegionCoordinates(requestData, imageMetadata);
         Dimension requestedSize = regionSizeCalculator.getSizeForExtraction(imageMetadata, requestData);
         BigDecimal requestedSizeWidth = new BigDecimal(requestedSize.width);
         BigDecimal requestedSizeHeight = new BigDecimal(requestedSize.height);
@@ -194,7 +194,7 @@ public class KakaduParameterCalculator {
 
     public String calculateRegionExtractionParameter(ImageMetadata imageMetadata, RequestData requestData) {
 
-        Rectangle requestedRegion = regionSizeCalculator.getRegionCoordinates(imageMetadata, requestData);
+        Rectangle requestedRegion = regionSizeCalculator.getRegionCoordinates(requestData, imageMetadata);
 
         BigDecimal startX = null;
         BigDecimal startY = null;
@@ -204,7 +204,7 @@ public class KakaduParameterCalculator {
 
         if (!requestData.isRegionFull()) {
             if (requestData.isRegionPercentage()) {
-                requestedRegion = regionSizeCalculator.getRegion(requestData);
+                requestedRegion = regionSizeCalculator.getRegion(requestData, imageMetadata);
                 startX = new BigDecimal(requestedRegion.x).movePointLeft(2);
                 startY = new BigDecimal(requestedRegion.y).movePointLeft(2);
                 tileWidth = new BigDecimal(requestedRegion.width).movePointLeft(2);

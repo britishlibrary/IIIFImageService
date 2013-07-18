@@ -72,7 +72,7 @@ public class PixelRegionVariableSizeCalculator {
 
         assertEquals(expected, size);
 
-        Rectangle region = regionSizeCalculator.getRegionCoordinates(imageMetadata, requestData);
+        Rectangle region = regionSizeCalculator.getRegionCoordinates(requestData, imageMetadata);
         Rectangle expectedRegion = new Rectangle(1000, 1100, 1200, 1300);
         assertEquals(expectedRegion, region);
 

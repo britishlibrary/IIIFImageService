@@ -90,42 +90,29 @@ public class RequestValidator implements Validator {
             }
 
             String[] coords = requestParser.splitParameter(regionValue);
-            validateCoordinates(coords, errors);
+            validateCoordinates(requestData, coords, errors);
         }
 
     }
 
-    private void validateCoordinates(String[] coords, Errors errors) {
+    private void validateCoordinates(RequestData requestData, String[] coords, Errors errors) {
 
         if (coords.length != 4) {
             errors.rejectValue("region", "region.missing");
             return;
         }
 
-        if (StringUtils.isEmpty(coords[0])) {
-            errors.rejectValue("region", "x.missing");
+        for (int i = 0; i < coords.length; i++) {
+            if (StringUtils.isEmpty(coords[i])) {
+                errors.rejectValue("region", "region.missing");
+            }
+            if (!coords[i].matches("\\d+\\.?\\d*")) {
+                errors.rejectValue("region", "region.nan");
+            }
         }
 
-        if (StringUtils.isEmpty(coords[1])) {
-            errors.rejectValue("region", "y.missing");
-        }
-
-        if (StringUtils.isEmpty(coords[2])) {
-            errors.rejectValue("region", "width.missing");
-        }
-
-        if (!StringUtils.isEmpty(coords[2]) && Integer.valueOf(coords[2]) == 0) {
-            errors.rejectValue("region", "width.zero");
-        }
-
-        if (StringUtils.isEmpty(coords[3])) {
-            errors.rejectValue("region", "height.mising");
-
-        }
-
-        if (!StringUtils.isEmpty(coords[3]) && Integer.valueOf(coords[3]) == 0) {
-            errors.rejectValue("region", "height.zero");
-
+        if (coords[2].equals("0") || coords[3].equals("0")) {
+            throw new ImageServiceException("region width or height must not be zero", 400, ParameterName.REGION);
         }
 
     }
