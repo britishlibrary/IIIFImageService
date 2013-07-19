@@ -18,7 +18,6 @@ import uk.bl.iiifimageservice.domain.ImageMetadata;
 import uk.bl.iiifimageservice.domain.ImageQuality;
 import uk.bl.iiifimageservice.domain.RequestData;
 import uk.bl.iiifimageservice.service.kakaduextractor.KakaduParameterCalculator;
-import uk.bl.iiifimageservice.service.kakaduextractor.SimpleKakaduExtractor;
 import uk.bl.iiifimageservice.util.ImageServiceException;
 
 /**
@@ -30,7 +29,7 @@ import uk.bl.iiifimageservice.util.ImageServiceException;
 @Service
 public class ImageManipulator {
 
-    private static final Logger log = LoggerFactory.getLogger(SimpleKakaduExtractor.class);
+    private static final Logger log = LoggerFactory.getLogger(ImageManipulator.class);
 
     @Resource
     private RegionSizeCalculator regionSizeCalculator;
@@ -69,8 +68,8 @@ public class ImageManipulator {
     }
 
     /**
-     * It's possible that the Kakadu generated image is the exact resize requested. Where the scale factor returned by
-     * the log file matches the scaling requested then no resizing is performed by this image service.
+     * It's possible that the Kakadu generated image matches the exact size requested. Where the scale factor returned
+     * by the log file matches the scaling requested then no resizing is performed by this image service.
      * 
      * @param requestData
      * @param imageMetadata
