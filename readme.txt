@@ -60,6 +60,12 @@ If you do not have any JPEG2000 images available example JPEG2000s can be downlo
 //
 // Release Notes
 //
+1.0.3 - fixes for outsize images
+	  - added properties to preserve intermediate .bmp and .jpg files
+	  - fixed calculation of scale factors
+	  - skipped resizing of image if kakadu has generated the precise size already
+	  - intermediate .jpg files now named with unique uuid to prevent OS locking
+
 1.0.2 - number of scale factors matches levels from jp2 file
       - added debug logging to show image locations on file system
 
