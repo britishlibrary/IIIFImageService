@@ -50,18 +50,22 @@ public class KakaduParameterCalculator {
                 / imageMetadata.getHeight()), precisonTen);
 
         if (requestData.isRegionPercentage()) {
+        	log.debug("isRegionPercentage - passed");
             tileWidth = new BigDecimal(requestedRegion.width);
             tileHeight = new BigDecimal(requestedRegion.height);
         }
 
         if (requestData.isRegionAbsolute()) {
+        	log.debug("isRegionAbsolute - passed");
             tileWidth = new BigDecimal(requestedRegion.width);
             tileHeight = new BigDecimal(requestedRegion.height);
         }
 
         // a resize
         if (requestData.isSizeDeterminedByWidthHeight()) {
+        	log.debug("isSizeDeterminedByWidthHeight - passed");
             if (requestData.isRegionFull()) {
+            	log.debug("isRegionFull - passed");
                 scaleX = widthScale;
                 scaleY = heightScale;
 
@@ -74,6 +78,7 @@ public class KakaduParameterCalculator {
                 tileHeight = new BigDecimal(String.valueOf(imageMetadata.getHeight())).multiply(scale, precisonTen);
 
             } else if (requestedSize.width != 0 && requestedSize.height != 0) {
+            	log.debug("requestedSize.width != 0 && requestedSize.height - passed");
                 if (tileWidth.compareTo(BigDecimal.ZERO) > 0) {
                     scaleX = requestedSizeWidth.divide(tileWidth, precisonTen);
                 } else {
@@ -95,6 +100,8 @@ public class KakaduParameterCalculator {
                 }
 
             } else if (requestedSize.width > requestedSize.height) {
+            	log.debug("requestedSize.width > requestedSize.height - passed");
+                
                 if (tileWidth.compareTo(BigDecimal.ZERO) > 0) {
                     scale = (new BigDecimal(requestedSize.width).divide(tileWidth, precisonTen));
                 } else {
@@ -103,6 +110,7 @@ public class KakaduParameterCalculator {
 
                 scaleY = scaleX = scale;
             } else {
+            	log.debug("final else - passed");
                 if (tileHeight.compareTo(BigDecimal.ZERO) > 0) {
                     scale = (new BigDecimal(requestedSize.height).divide(tileHeight, precisonTen));
                 } else {
@@ -117,11 +125,25 @@ public class KakaduParameterCalculator {
                 if (requestedSize.getWidth() != 0)
                     tileHeight = requestedSizeHeight;
             }
-
+            log.debug("resizeImage tileWidth [" + tileWidth + "]");
+            log.debug("resizeImage requestedSizeWidth [" + requestedSizeWidth + "]");
+            log.debug("resizeImage widthScale [" + widthScale + "]");
+            log.debug("resizeImage scaleX [" + scaleX + "]");
+            log.debug("resizeImage tileHeight [" + tileHeight + "]");
+            log.debug("resizeImage requestedSizeHeight [" + requestedSizeHeight + "]");
+            log.debug("resizeImage heightScale [" + heightScale + "]");
+            log.debug("resizeImage scaleY [" + scaleY + "]");
+            log.debug("resizeImage scale [" + scale + "]");
         } // end resizeImage
 
         // size best fit
         if (requestData.isSizeBestFit()) {
+        	log.debug("isSizeBestFit - passed");
+        	/* SM added two lines */
+        	tileWidth = new BigDecimal(String.valueOf(imageMetadata.getWidth())).multiply(scale, precisonTen);
+            tileHeight = new BigDecimal(String.valueOf(imageMetadata.getHeight())).multiply(scale, precisonTen);
+
+        	
             if (tileWidth.compareTo(BigDecimal.ZERO) > 0) {
                 scaleX = requestedSizeWidth.divide(tileWidth, precisonTen);
             } else {
@@ -142,10 +164,19 @@ public class KakaduParameterCalculator {
 
             // get all
             if (requestData.isRegionFull()) {
+            	log.debug("isRegionFull - passed");
                 tileWidth = new BigDecimal(imageMetadata.getWidth()).multiply(scale, precisonTen);
                 tileHeight = new BigDecimal(imageMetadata.getHeight()).multiply(scale, precisonTen);
             }
-
+            log.debug("best fit tileWidth [" + tileWidth + "]");
+            log.debug("best fit requestedSizeWidth [" + requestedSizeWidth + "]");
+            log.debug("best fit widthScale [" + widthScale + "]");
+            log.debug("best fit scaleX [" + scaleX + "]");
+            log.debug("best fit tileHeight [" + tileHeight + "]");
+            log.debug("best fit requestedSizeHeight [" + requestedSizeHeight + "]");
+            log.debug("best fit heightScale [" + heightScale + "]");
+            log.debug("best fit scaleY [" + scaleY + "]");
+            log.debug("best fit scale [" + scale + "]");
         } // end size best fit
 
         // size %
@@ -174,6 +205,8 @@ public class KakaduParameterCalculator {
     public int calculateReduceParameter(ImageMetadata imageMetadata, RequestData requestData) {
 
         BigDecimal scale = calculateScale(imageMetadata, requestData);
+        
+        log.debug("scale [" + scale + "]");
 
         int reduce = BigDecimal.ONE.divide(scale, new MathContext(10, RoundingMode.HALF_EVEN))
                                    .setScale(0, RoundingMode.HALF_EVEN)

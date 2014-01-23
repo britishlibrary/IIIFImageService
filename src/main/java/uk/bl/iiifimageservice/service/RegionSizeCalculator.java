@@ -8,10 +8,13 @@ import java.math.RoundingMode;
 
 import javax.annotation.Resource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import uk.bl.iiifimageservice.domain.ImageMetadata;
 import uk.bl.iiifimageservice.domain.RequestData;
+import uk.bl.iiifimageservice.service.kakaduextractor.KakaduParameterCalculator;
 import uk.bl.iiifimageservice.util.RequestParser;
 
 /**
@@ -22,6 +25,9 @@ import uk.bl.iiifimageservice.util.RequestParser;
  */
 @Service
 public class RegionSizeCalculator {
+	
+	  private static final Logger log = LoggerFactory.getLogger(RegionSizeCalculator.class);
+
 
     @Resource
     private RequestParser requestParser;
@@ -69,6 +75,9 @@ public class RegionSizeCalculator {
         Dimension d = new Dimension();
 
         Dimension regionSize = getRegionCoordinates(requestData, imageMetadata).getSize();
+        
+        log.debug("getSizeForImageManipulation - passed");
+        
 
         if (requestData.isSizeFull()) {
             return regionSize;
@@ -84,13 +93,34 @@ public class RegionSizeCalculator {
 
         if (requestData.isSizeHeightDeterminedByWidth()) {
             d.width = Integer.parseInt(coords[0]);
-            d.height = (d.width * regionSize.height) / regionSize.width;
+            /* replaced 
+             * d.height = (d.width * regionSize.height) / regionSize.width;
+             * with
+             */
+           d.height = new BigDecimal((d.width * regionSize.height))
+           		.divide(new BigDecimal(regionSize.width),2, RoundingMode.HALF_UP)
+                .setScale(0, RoundingMode.HALF_EVEN).intValue();
+           log.debug("isSizeHeightDeterminedByWidth d.height [" + d.height + "]");
+           /* end replace */
+           
             return d;
         }
 
         if (requestData.isSizeWidthDeterminedByHeight()) {
             d.height = Integer.parseInt(coords[1]);
-            d.width = (d.height * regionSize.width) / regionSize.height;
+            /* replaced
+             * d.width = (d.height * regionSize.width) / regionSize.height;
+             * with
+             */
+           log.debug("d.height [" + d.height + "]");
+           log.debug("regionSize.width [" + regionSize.width + "]");
+           log.debug("regionSize.height [" + regionSize.height + "]");
+            d.width = new BigDecimal((d.height * regionSize.width))
+           		.divide(new BigDecimal(regionSize.height),2, RoundingMode.HALF_UP)
+           		.setScale(0, RoundingMode.HALF_EVEN).intValue(); 
+           log.debug("isSizeWidthDeterminedByHeight d.width [" + d.width + "]");
+           /* end replace */
+            
             return d;
         }
 
