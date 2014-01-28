@@ -34,7 +34,7 @@ public class FullRegionVariableSizeCalculatorTest {
         RequestData requestData = RequestDataGenerator.getTestRequestDataFullRegionSizeSetByWidth();
 
         Dimension size = regionSizeCalculator.getSizeForImageManipulation(imageMetadata, requestData);
-        Dimension expected = new Dimension(600, 829);
+        Dimension expected = new Dimension(600, 830);
 
         assertEquals(expected, size);
 

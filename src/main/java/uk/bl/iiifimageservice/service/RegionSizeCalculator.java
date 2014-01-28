@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import uk.bl.iiifimageservice.domain.ImageMetadata;
 import uk.bl.iiifimageservice.domain.RequestData;
-import uk.bl.iiifimageservice.service.kakaduextractor.KakaduParameterCalculator;
 import uk.bl.iiifimageservice.util.RequestParser;
 
 /**
