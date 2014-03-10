@@ -18,7 +18,9 @@ import org.springframework.beans.factory.annotation.Value;
 import uk.bl.iiifimageservice.domain.ImageError.ParameterName;
 import uk.bl.iiifimageservice.domain.ImageFormat;
 import uk.bl.iiifimageservice.domain.ImageMetadata;
+import uk.bl.iiifimageservice.domain.ImageRequestMetadata;
 import uk.bl.iiifimageservice.domain.RequestData;
+import uk.bl.iiifimageservice.domain.ServerRequestData;
 import uk.bl.iiifimageservice.service.kakaduextractor.KakaduParameterCalculator;
 import uk.bl.iiifimageservice.util.ImageServiceException;
 
@@ -70,7 +72,18 @@ public abstract class AbstractImageService implements ImageService {
         }
 
         return imageMetadata;
+    }
 
+    @Override
+    public ImageRequestMetadata extractImageMetadata(ServerRequestData serverRequestData) throws IOException,
+            InterruptedException {
+
+        ImageMetadata imageMetadata = extractImageMetadata(serverRequestData.getIdentifier());
+        ImageRequestMetadata imageRequestMetadata = new ImageRequestMetadata(imageMetadata);
+
+        imageRequestMetadata.setScheme(serverRequestData.getScheme());
+
+        return imageRequestMetadata;
     }
 
     @Override
@@ -102,8 +115,7 @@ public abstract class AbstractImageService implements ImageService {
         BufferedImage manipulatedImage = imageManipulator.changeImage(bmpInputImage, requestData, jp2ImageMetadata);
 
         String outputFormat = requestData.getFormat();
-        if (outputFormat.toUpperCase()
-                        .equals(ImageFormat.JP2.name())) {
+        if (outputFormat.toUpperCase().equals(ImageFormat.JP2.name())) {
             outputFormat = "JPEG2000";
         }
 
@@ -124,8 +136,7 @@ public abstract class AbstractImageService implements ImageService {
             ImageMetadata imageMetadata, Path outputPath) {
 
         int reduce = kakaduParameterCalculator.calculateReduceParameter(imageMetadata, requestData);
-        String jp2ImageFilename = fileSystemReader.getImagePathFromIdentifier(requestData.getIdentifier())
-                                                  .toString();
+        String jp2ImageFilename = fileSystemReader.getImagePathFromIdentifier(requestData.getIdentifier()).toString();
 
         String[] command = new String[] { binaryPath, "-resilient", "-quiet", "-reduce", String.valueOf(reduce), "-i",
                 jp2ImageFilename, "-o", outputPath.toString() };
@@ -165,10 +176,8 @@ public abstract class AbstractImageService implements ImageService {
 
         log.debug("Calling kdu_expand binary to extract metadata for identifier [" + identifier + "]");
 
-        String imageFilename = fileSystemReader.getImagePathFromIdentifier(identifier)
-                                               .toString();
-        String logFilename = fileSystemReader.getLogFileFromIdentifier(identifier)
-                                             .toString();
+        String imageFilename = fileSystemReader.getImagePathFromIdentifier(identifier).toString();
+        String logFilename = fileSystemReader.getLogFileFromIdentifier(identifier).toString();
 
         callShellCommand(kakaduBinaryPath, "-i", imageFilename, "-record", logFilename);
 

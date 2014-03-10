@@ -4,9 +4,7 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-
+import javax.xml.bind.annotation.XmlTransient;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
@@ -15,9 +13,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
  * @author pblake
  * 
  */
-@XmlRootElement(name = "info")
-@XmlType(propOrder = { "identifier", "width", "height", "scaleFactors", "tileWidth", "tileHeight", "formats",
-        "qualities", "profile" })
+@XmlTransient
 public class ImageMetadata {
 
     private String identifier;

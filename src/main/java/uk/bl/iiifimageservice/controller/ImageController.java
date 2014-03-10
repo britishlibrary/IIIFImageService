@@ -25,8 +25,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import uk.bl.iiifimageservice.domain.ImageError;
-import uk.bl.iiifimageservice.domain.ImageMetadata;
+import uk.bl.iiifimageservice.domain.ImageRequestMetadata;
 import uk.bl.iiifimageservice.domain.RequestData;
+import uk.bl.iiifimageservice.domain.ServerRequestData;
 import uk.bl.iiifimageservice.service.ImageService;
 import uk.bl.iiifimageservice.util.ImageServiceException;
 
@@ -61,17 +62,23 @@ public class ImageController {
 
     @RequestMapping(value = "/{identifier}/info", method = RequestMethod.GET)
     public @ResponseBody
-    Callable<ImageMetadata> getImageMetadata(final @PathVariable String identifier, HttpServletRequest request,
+    Callable<ImageRequestMetadata> getImageMetadata(final @PathVariable String identifier, HttpServletRequest request,
             HttpServletResponse response) {
 
         controllerHelper.validateRequestUri(request.getRequestURI());
         log.info("Extracting metadata for image file with identifier [" + identifier + "]");
         controllerHelper.addLinkHeader(response);
 
-        return new Callable<ImageMetadata>() {
+        final ServerRequestData data = new ServerRequestData();
+        data.setIdentifier(identifier);
+        data.setHost(request.getServerName());
+        data.setContextPath(request.getContextPath());
+        data.setScheme(request.getScheme());
+
+        return new Callable<ImageRequestMetadata>() {
             @Override
-            public ImageMetadata call() throws Exception {
-                return imageService.extractImageMetadata(identifier);
+            public ImageRequestMetadata call() throws Exception {
+                return imageService.extractImageMetadata(data);
             }
         };
     }

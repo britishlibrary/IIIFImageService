@@ -214,6 +214,7 @@ public class KakaduParameterCalculator {
         if (reduce > 0) {
             reduce = (int) Math.floor(logOfBase(2, reduce));
         }
+        reduce = Math.min(reduce, imageMetadata.getScaleFactors().size());
 
         log.debug("reduce [" + reduce + "]");
 

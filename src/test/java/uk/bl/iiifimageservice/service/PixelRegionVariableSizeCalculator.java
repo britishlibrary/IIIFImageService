@@ -56,7 +56,7 @@ public class PixelRegionVariableSizeCalculator {
         RequestData requestData = RequestDataGenerator.getTestRequestDataPixelRegionSizeSetByHeight();
 
         Dimension size = regionSizeCalculator.getSizeForImageManipulation(imageMetadata, requestData);
-        Dimension expected = new Dimension(553, 600);
+        Dimension expected = new Dimension(554, 600);
 
         assertEquals(expected, size);
 
